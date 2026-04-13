@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DLB Command Center | Diamond League Baseball</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        :root {
+            --dlb-blue: #3b82f6;
+            --dlb-red: #ef4444;
+            --dlb-black: #0f172a;
+        }
+        body { background-color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .arcade-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-bottom: 4px solid var(--dlb-blue);
+        }
+        .nav-active {
+            border-bottom: 4px solid var(--dlb-blue);
+            color: var(--dlb-blue) !important;
+            font-weight: 800;
+        }
+        .die-icon {
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+            margin-right: 2px;
+        }
+        .bg-dlb-blue { background-color: var(--dlb-blue); }
+        .bg-dlb-red { background-color: var(--dlb-red); }
+        .bg-dlb-black { background-color: #000000; color: #ef4444 !important; border: 1px solid #450a0a; }
+        
+        .loading-shimmer {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .img-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .img-container:hover .img-overlay { opacity: 1; }
+        .spray-dot { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    </style>
+</head>
+<body class="pb-20">
+
+    <!-- GLOBAL HEADER -->
+    <header class="arcade-header shadow-lg sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="w-8 h-8 relative">
+                    <div class="absolute top-0 w-0 h-0 border-l-[16px] border-l-transparent border-r-[16px] border-r-transparent border-bottom-[16px] border-bottom-blue-500"></div>
+                    <div class="absolute bottom-0 w-0 h-0 border-l-[16px] border-l-transparent border-r-[16px] border-r-transparent border-top-[16px] border-top-red-500"></div>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black italic tracking-tighter text-white uppercase leading-none">
+                        DLB <span class="text-blue-500">Command Center</span>
+                    </h1>
+                    <p class="text-[10px] font-mono text-slate-400 mt-1 tracking-widest uppercase italic">System v7.2 // Painterly Stylization Update</p>
+                </div>
+            </div>
+            <nav class="flex gap-8 text-sm font-bold uppercase tracking-tight text-slate-400" id="mainNav">
+                <button class="nav-item nav-active py-2" data-target="tab-builder">Drafting Room</button>
+                <button class="nav-item py-2" data-target="tab-league">Front Office</button>
+                <button class="nav-item py-2" data-target="tab-visualizer">AI Imaging</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto p-6">
+        
+        <!-- SECTION: PLAYER BUILDER -->
+        <section id="tab-builder" class="tab-content animate-in fade-in duration-300">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
+                        <h2 class="text-xl font-black uppercase italic mb-6 border-l-4 border-blue-500 pl-4">Draft Profile</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <div class="col-span-full">
+                                <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Player Name</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="builder-name" class="flex-1 bg-slate-50 border-2 border-slate-100 p-3 rounded-xl font-black italic uppercase outline-none focus:border-blue-500 transition-all">
+                                    <button onclick="randomizeBuilderName()" class="bg-slate-100 hover:bg-slate-200 p-3 rounded-xl transition-all">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Experience Tier</label>
+                                <select id="builder-exp" onchange="updateBuilderUI()" class="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl font-bold">
+                                    <option value="Rookie">Rookie (Fatigue 1:1)</option>
+                                    <option value="Journeyman">Journeyman (Fatigue 1:2)</option>
+                                    <option value="Veteran">Veteran (Fatigue 1:3)</option>
+                                </select>
+                            </div>
+                            <div class="flex items-end">
+                                <label class="flex items-center gap-3 bg-slate-50 p-3 rounded-xl border-2 border-slate-100 w-full cursor-pointer">
+                                    <input type="checkbox" id="builder-star" onchange="updateBuilderUI()" class="w-5 h-5 accent-yellow-500">
+                                    <span class="font-bold text-yellow-600 uppercase italic">Star Player (+10 Pts)</span>
+                                </label>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Primary Position</label>
+                                <select id="builder-pos-1" onchange="updateBuilderUI()" class="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl font-bold">
+                                    <option value="P">Pitcher</option>
+                                    <option value="C">Catcher</option>
+                                    <option value="1B">First Base</option>
+                                    <option value="2B">Second Base</option>
+                                    <option value="3B">Third Base</option>
+                                    <option value="SS">Shortstop</option>
+                                    <option value="LF">Left Field</option>
+                                    <option value="CF">Center Field</option>
+                                    <option value="RF">Right Field</option>
+                                </select>
+                            </div>
+                            <div id="secondary-pos-container" class="hidden">
+                                <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Secondary Position (Utility)</label>
+                                <select id="builder-pos-2" onchange="updateBuilderUI()" class="w-full bg-yellow-50 border-2 border-yellow-100 p-3 rounded-xl font-bold">
+                                    <option value="">None</option>
+                                    <option value="P">Pitcher</option>
+                                    <option value="C">Catcher</option>
+                                    <option value="1B">First Base</option>
+                                    <option value="2B">Second Base</option>
+                                    <option value="3B">Third Base</option>
+                                    <option value="SS">Shortstop</option>
+                                    <option value="LF">Left Field</option>
+                                    <option value="CF">Center Field</option>
+                                    <option value="RF">Right Field</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Skill Dice Assignment -->
+                        <div class="space-y-4 mb-8">
+                            <div class="flex justify-between items-end">
+                                <label class="block text-xs font-bold uppercase text-slate-400">Skill Dice Assignment (Max 5/Skill)</label>
+                                <span class="text-[9px] font-mono uppercase text-slate-400">B: 1pt | R: 2pts | K: -1pt | Upg B->R: 1pt</span>
+                            </div>
+                            <div id="builder-skills" class="grid grid-cols-1 gap-4"></div>
+                        </div>
+
+                        <!-- Fatigue Tracker Section -->
+                        <div class="bg-slate-50 rounded-2xl p-6 border-2 border-slate-100 mb-8">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xs font-black uppercase text-slate-400 tracking-widest">Auto-Fatigue Tracker</h3>
+                                <div id="fatigue-meta" class="text-[10px] font-mono text-blue-500 font-bold uppercase">Total Red Dice: 0</div>
+                            </div>
+                            <div id="builder-fatigue" class="flex flex-wrap gap-2 min-h-[32px]"></div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-4">
+                                <label class="block text-xs font-bold uppercase text-slate-400 tracking-widest">Abilities & Intangibles</label>
+                                <div id="builder-intangibles" class="grid grid-cols-1 gap-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar"></div>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <label class="block text-xs font-bold uppercase text-slate-400">Spray Tendency</label>
+                                    <button onclick="rollSpray()" class="text-[10px] text-blue-500 font-bold hover:underline">Re-Roll Chart</button>
+                                </div>
+                                <div id="spray-chart" class="bg-slate-900 rounded-3xl aspect-video relative overflow-hidden flex items-center justify-center border-2 border-slate-800">
+                                    <svg viewBox="0 0 200 120" class="w-full h-full p-4 opacity-30">
+                                        <path d="M100 110 L20 60 L100 10 L180 60 Z" fill="none" stroke="#334155" stroke-width="1" />
+                                        <path d="M100 110 L60 85 L100 60 L140 85 Z" fill="none" stroke="#334155" stroke-width="1" />
+                                    </svg>
+                                    <div id="spray-points" class="absolute inset-0"></div>
+                                    <div id="spray-label" class="absolute bottom-4 left-0 right-0 text-center text-[10px] font-mono text-slate-400 uppercase tracking-widest">Balanced Hitter</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Point Tracker Sidebar -->
+                <div class="space-y-6">
+                    <div class="bg-slate-900 rounded-3xl p-8 text-white sticky top-28 shadow-2xl border-b-8 border-blue-500">
+                        <div class="mb-6">
+                            <span class="text-[10px] uppercase font-mono text-slate-400 tracking-widest">Cap Space</span>
+                            <div class="text-4xl font-black italic" id="builder-points">0 / 0 PTS</div>
+                        </div>
+                        <div class="mb-8">
+                            <span class="text-[10px] uppercase font-mono text-slate-400 tracking-widest">Annual Salary</span>
+                            <div class="text-4xl font-black text-green-400" id="builder-salary">$0K</div>
+                        </div>
+                        <div class="space-y-3">
+                            <button onclick="sendToVisualizer()" class="w-full bg-blue-600 hover:bg-blue-500 p-4 rounded-2xl font-black uppercase italic tracking-widest transition-all shadow-lg flex items-center justify-center gap-2">
+                                <span>🎨</span> Visualize Player
+                            </button>
+                            <button onclick="resetBuilder()" class="w-full bg-slate-800 hover:bg-slate-700 p-4 rounded-2xl font-bold uppercase text-xs text-slate-400 transition-all border border-slate-700">
+                                Clear Draft
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: LEAGUE GENERATOR -->
+        <section id="tab-league" class="tab-content hidden animate-in fade-in duration-300">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-8 bg-slate-50 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div>
+                        <h2 class="text-xl font-black uppercase italic text-slate-900">League Registry</h2>
+                        <p class="text-xs text-slate-500 uppercase font-mono">Simulating Diamond League Expansion</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <button onclick="generateRoster()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-2xl font-black uppercase italic text-sm transition-all shadow-md">Generate 100 Players</button>
+                        <button onclick="exportCSV()" id="csv-btn" class="hidden bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-2xl font-black uppercase italic text-sm transition-all">Download CSV</button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto max-h-[600px]">
+                    <table class="w-full text-left text-sm" id="league-table">
+                        <thead class="bg-slate-900 text-white sticky top-0 uppercase text-[10px] font-mono tracking-widest">
+                            <tr>
+                                <th class="p-4">Player (Click to Rename)</th>
+                                <th class="p-4">Exp</th>
+                                <th class="p-4">Pos</th>
+                                <th class="p-4 text-[10px]">Intangibles</th>
+                                <th class="p-4 text-center">Arm</th>
+                                <th class="p-4 text-center">Bat</th>
+                                <th class="p-4 text-center">Glove</th>
+                                <th class="p-4 text-center">Legs</th>
+                                <th class="p-4 text-center text-red-400">Fatigue</th>
+                                <th class="p-4 text-right">Salary</th>
+                                <th class="p-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100" id="league-body">
+                            <tr><td colspan="11" class="p-20 text-center text-slate-400 italic font-mono uppercase text-xs">Awaiting Front Office directive...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: PORTRAIT VISUALIZER -->
+        <section id="tab-visualizer" class="tab-content hidden animate-in fade-in duration-300">
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 mb-8">
+                    <div class="flex flex-col md:flex-row gap-6 mb-8">
+                        <div class="flex-1">
+                            <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Subject Name</label>
+                            <input type="text" id="viz-name" class="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl font-black italic uppercase text-lg outline-none focus:border-blue-500">
+                        </div>
+                        <div class="md:w-72">
+                            <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Art Style</label>
+                            <!-- 3-Way Style Toggle -->
+                            <div class="relative w-full h-12 bg-slate-100 rounded-2xl p-1 flex select-none overflow-hidden border border-slate-200 shadow-inner">
+                                <div id="viz-toggle-bg" class="absolute top-1 bottom-1 left-1 w-[calc(33.33%-4px)] bg-white rounded-xl shadow-sm transition-all duration-300 ease-in-out translate-x-0"></div>
+                                <button onclick="setVizStyle('realistic')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] font-black uppercase italic transition-colors duration-300" id="label-realistic">Realistic</button>
+                                <button onclick="setVizStyle('anime')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] font-black uppercase italic transition-colors duration-300" id="label-anime">Anime</button>
+                                <button onclick="setVizStyle('stylized')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] font-black uppercase italic transition-colors duration-300" id="label-stylized">Painterly</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="renderPortrait()" id="render-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-2xl uppercase italic tracking-widest transition-all shadow-lg flex items-center justify-center gap-3">
+                        <span>🪄</span> Render DLB Portrait
+                    </button>
+                </div>
+
+                <div id="portrait-result" class="hidden">
+                    <div class="bg-white rounded-3xl shadow-2xl p-4 border-4 border-white overflow-hidden relative group img-container aspect-square max-w-lg mx-auto">
+                        <div id="viz-shimmer" class="loading-shimmer absolute inset-0 z-10 flex items-center justify-center">
+                            <span class="text-slate-400 font-black uppercase italic tracking-tighter animate-pulse text-center px-8">Processing Neural Matrix...</span>
+                        </div>
+                        <img id="viz-img" class="w-full h-full object-cover rounded-2xl hidden" onload="this.classList.remove('hidden'); document.getElementById('viz-shimmer').classList.add('hidden')">
+                        <div class="img-overlay cursor-pointer" onclick="renderPortrait()">Click to Regenerate</div>
+                        <button onclick="downloadViz()" class="absolute bottom-6 right-6 bg-white/90 backdrop-blur px-6 py-3 rounded-xl font-black uppercase italic text-xs text-slate-900 shadow-2xl hover:bg-white transition-all">Download Asset</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const apiKey = "";
+        
+        // --- CONSTANTS ---
+        const SKILLS = ['Arm', 'Bat', 'Glove', 'Legs'];
+        const POSITION_LIST = ['P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF'];
+        
+        const INTANGIBLES_DATA = [
+            { name: "Flash", cost: 3, sal: 3, desc: "May re-roll any dice during a Legs Skill Test." },
+            { name: "Clutch Performer", cost: 3, sal: 3, desc: "Balls count as hits in Overtime or trailing in 6th/7th innings." },
+            { name: "Iron Grip", cost: 2, sal: 2, desc: "Ignore the first Error (E) rolled in a Glove Skill Test." },
+            { name: "Heavy Hitter", cost: 4, sal: 4, desc: "+1 Hit when rolling more Red Dice than Blue Dice during an At Bat." },
+            { name: "Durable", cost: 2, sal: 2, desc: "Reduce Fatigue dice by 1." },
+            { name: "Flame Thrower", cost: 5, sal: 5, desc: "+1 Hit when Red Dice > Blue Dice when pitching during an At Bat." },
+            { name: "Switch Hitter", cost: 3, sal: 3, desc: "May choose hitting side; re-roll one die facing opposite arm." },
+            { name: "Utility Player", cost: 5, sal: 5, desc: "Player may have two fielding positions." },
+            { name: "Infielder", cost: 4, sal: 4, desc: "Player may play First, Second, Shortstop or Third base." },
+            { name: "Outfielder", cost: 4, sal: 4, desc: "Player may play any position in the Outfield." },
+            { name: "Master of the Corners", cost: 5, sal: 5, desc: "Pitcher wins ties during At Bats." },
+            { name: "Shut Down Player", cost: 6, sal: 6, desc: "Earn Spectacular Play tokens via three Strikeouts in an inning." },
+            { name: "Spray Hitter", cost: 4, sal: 4, desc: "Add or subtract 1 from the Spray Die on a hit." },
+            { name: "Rocket Arm", cost: 7, sal: 7, desc: "+1 Red Die on throws to catch a runner." },
+            { name: "Quick Feet", cost: 8, sal: 8, desc: "Move an additional half segment when attempting to field." },
+            { name: "Intimidating", cost: 7, sal: 7, desc: "Facing opponent must re-roll successes (unless also Intimidating)." }
+        ];
+
+        const NAME_LIB = {
+            american: { 
+                m: ["Tyler", "Cody", "Jackson", "Wyatt", "Garrett", "Blake", "Chase", "Hunter", "Austin", "Logan", "Travis", "Cooper", "Mason", "Grant", "Spencer", "Colton", "Ethan", "Noah", "Liam", "Jacob", "William", "Benjamin", "James", "Lucas", "Michael", "Alexander", "Daniel", "Elijah", "Aiden", "Matthew", "David", "Joseph", "Samuel", "Sebastian", "Jack", "Luke"],
+                f: ["Emily", "Madison", "Sophia", "Isabella", "Olivia", "Ava", "Emma", "Abigail", "Mia", "Chloe", "Lily", "Grace", "Zoe", "Riley", "Harper", "Avery", "Addison", "Elizabeth", "Ella", "Natalie", "Samantha", "Alexis", "Hailey", "Alyssa", "Hannah", "Ashley", "Brianna", "Brooklyn", "Charlotte", "Evelyn", "Layla", "Lillian", "Nora", "Scarlett", "Stella", "Victoria"], 
+                l: ["Thompson", "Miller", "Davis", "Wilson", "Moore", "Taylor", "Anderson", "Thomas", "Jackson", "White", "Harris", "Martin", "Clark", "Lewis", "Walker", "Smith", "Johnson", "Williams", "Brown", "Jones", "Young", "Allen", "King", "Wright", "Scott", "Green", "Baker", "Adams", "Nelson", "Hill", "Ramirez", "Campbell", "Mitchell", "Roberts", "Carter", "Phillips"] 
+            },
+            latin: { 
+                m: ["Javier", "Carlos", "Manuel", "Mateo", "Diego", "Alejandro", "Luis", "Miguel", "Santiago", "Enrique", "Rafael", "Jorge", "Andres", "Fernando", "Ricardo", "Sebastian", "Benjamin", "Felipe", "Nicolas", "Samuel", "Joaquin", "Tomas", "Bautista", "Juan", "Agustin", "Francisco", "Maximiliano", "Gabriel", "Lucas", "Leonardo", "Emiliano", "Ignacio", "Matías", "Cristian", "Eduardo", "Oscar"],
+                f: ["Elena", "Sofia", "Maria", "Lucia", "Valentina", "Martina", "Camila", "Luciana", "Isabella", "Natalia", "Gabriela", "Mariana", "Victoria", "Ximena", "Paola", "Renata", "Emma", "Abigail", "Daniela", "Paula", "Sara", "Julia", "Florencia", "Antonella", "Valeria", "Catalina", "Julieta", "Agustina", "Micaela", "Constanza", "Fernanda", "Adriana", "Belen", "Jimena", "Lola", "Carmen"], 
+                l: ["Morales", "Rios", "Castro", "Vega", "Ortiz", "Mendez", "Salazar", "Cordova", "Espinoza", "Pacheco", "Navarro", "Guzman", "Ibarra", "Reyes", "Villalobos", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Perez", "Sanchez", "Ramirez", "Torres", "Flores", "Rivera", "Gomez", "Diaz", "Cruz", "Gutierrez", "Jimenez", "Alvarez", "Romero", "Vazquez", "Castillo", "Vargas"] 
+            },
+            japanese: { 
+                m: ["Kenji", "Hiroto", "Takashi", "Ren", "Yuto", "Kazuki", "Haruto", "Daisuke", "Kaito", "Sho", "Yuki", "Sora", "Riku", "Taiga", "Itsuki", "Minato", "Haru", "Hinata", "Asahi", "Reo", "Yuuma", "Touma", "Yamato", "Ibuki", "Akito", "Hayato", "Hiro", "Ryouta", "Shota", "Kota", "Daiki", "Tsubasa", "Ryo", "Souta", "Sosuke", "Kouta"],
+                f: ["Sakura", "Hana", "Aoi", "Mei", "Yui", "Rio", "Himari", "Koharu", "Hina", "Karin", "Nanami", "Akari", "Mio", "Saki", "Ayaka", "Ichika", "Sara", "Kanna", "Tsumugi", "Rin", "Sana", "Riko", "An", "Ema", "Nao", "Mao", "Misaki", "Kaho", "Yuna", "Noa", "Honoka", "Mina", "Yuki", "Asahi", "Rinka", "Manami", "Kyoko"], 
+                l: ["Sato", "Tanaka", "Watanabe", "Ito", "Yamamoto", "Nakamura", "Kobayashi", "Kato", "Yoshida", "Yamada", "Sasaki", "Yamaguchi", "Matsumoto", "Inoue", "Kimura", "Suzuki", "Takahashi", "Hayashi", "Shimizu", "Yamazaki", "Mori", "Abe", "Ikeda", "Hashimoto", "Yamashita", "Ishikawa", "Nakajima", "Maeda", "Fujita", "Ogawa", "Goto", "Okada", "Hasegawa", "Murakami", "Sakamoto", "Endo"] 
+            },
+            korean: { 
+                m: ["Min-jun", "Seo-jun", "Do-yoon", "Ha-joon", "Ji-ho", "Ju-won", "Ye-jun", "Si-woo", "Jun-seo", "Do-hyun", "Hyun-woo", "Ji-hun", "Min-kyu", "Woo-jin", "Sang-hun", "Yu-jun", "Joon-woo", "Ha-yul", "Gun-woo", "Seo-jin", "Yeon-woo", "Eun-woo", "Si-hoo", "Yu-chan", "Ji-won", "Dong-hyun", "Beom-jun", "Tae-yang", "Seung-woo", "Min-ho", "Jung-hoon", "Dae-won", "Chan-woo", "Hyun-bin", "Sung-jae", "Ji-sung"],
+                f: ["Seo-yeon", "Ji-woo", "Ha-yoon", "Min-seo", "Ji-yoon", "Seo-hyun", "Su-bin", "Ha-eun", "Ji-ah", "Yoon-seo", "Ji-min", "Chae-won", "Yoo-jin", "Da-eun", "Ji-won", "Ji-yoo", "Ha-yul", "Seo-yoon", "Seo-ah", "Ah-rin", "Na-yoon", "Yu-na", "Si-ah", "Chae-yoon", "Ha-rin", "Min-ah", "So-yul", "Hye-won", "Eun-seo", "So-yeon", "Yae-ji", "Da-in", "Na-young", "Su-min", "Ye-eun", "Ji-eun"], 
+                l: ["Kim", "Lee", "Park", "Choi", "Jung", "Kang", "Cho", "Yoon", "Jang", "Lim", "Han", "Oh", "Seo", "Shin", "Kwon", "Hwang", "Song", "An", "Hong", "Jeon", "Ko", "Moon", "Yang", "Son", "Bae", "Baek", "Heo", "Yu", "Nam", "Sim", "Ha", "Sung", "Cha", "Joo", "Woo", "Koo"] 
+            }
+        };
+
+        const SUBTYPES = {
+            american: ["African American", "Caucasian", "South Asian American", "East Asian American", "Native American", "Biracial American"],
+            latin: ["Afro-Latino", "Mestizo", "Light-skinned Latino", "Indigenous-Latino", "Caribbean Latino"],
+            japanese: ["Fair-skinned Japanese", "Tanned Japanese", "Modern Japanese"],
+            korean: ["Fair-skinned Korean", "Olive-toned Korean", "Modern Korean"]
+        };
+
+        const BACKGROUND_THEMES = [
+            "blurred professional baseball stadium during a bright sunny afternoon with high-contrast shadows",
+            "blurred baseball stadium at golden hour sunset with warm orange lighting",
+            "blurred night game stadium with massive bright floodlights and a dark sky",
+            "blurred indoor professional training facility with green batting cages in the background",
+            "blurred dugout interior with wooden benches and baseball equipment",
+            "blurred bullpen area with a green grass field and chain-link fences",
+            "blurred urban community baseball diamond with a distant city skyline"
+        ];
+
+        const EXPRESSIONS = [
+            "determined and focused",
+            "a slight confident smirk",
+            "intense competitive expression",
+            "stoic and calm",
+            "mid-celebration shout",
+            "thoughtful and observant",
+            "a quiet steely gaze"
+        ];
+
+        const CAMERA_ANGLES = [
+            "close-up headshot",
+            "three-quarter profile view",
+            "low angle looking up for a heroic feel",
+            "side profile shot",
+            "eye-level straight-on portrait"
+        ];
+
+        const CHARACTER_FLAVOR = [
+            "wearing tactical eye black under the eyes",
+            "with beads of sweat on the forehead from competition",
+            "the baseball cap is tilted slightly for character",
+            "an intense gaze directly into the lens",
+            "a slight rugged appearance with minor dirt on the cheek"
+        ];
+
+        // --- GLOBAL STATE ---
+        let builderState = {
+            name: "", exp: "Rookie", isStar: false,
+            pos1: "P", pos2: "", origin: "american", gender: "male",
+            physicalSubtype: "African American",
+            background: "",
+            expression: "",
+            cameraAngle: "",
+            flavor: "",
+            skills: SKILLS.reduce((acc, s) => ({...acc, [s]: {b:2, r:0, k:0}}), {}),
+            intangibles: [],
+            spray: { pull: 33, center: 34, opp: 33 }
+        };
+        let currentVizStyle = 'realistic';
+        let generatedLeague = [];
+
+        // --- CORE FUNCTIONS ---
+        function switchTab(targetId) {
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('nav-active', b.dataset.target === targetId));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('hidden', c.id !== targetId));
+        }
+
+        document.querySelectorAll('.nav-item').forEach(btn => {
+            btn.onclick = () => switchTab(btn.dataset.target);
+        });
+
+        function getRandomNameAndOrigin() {
+            const regions = Object.keys(NAME_LIB);
+            const r = regions[Math.floor(Math.random() * regions.length)];
+            const gender = Math.random() < 0.5 ? 'male' : 'female';
+            const fList = gender === 'male' ? NAME_LIB[r].m : NAME_LIB[r].f;
+            const f = fList[Math.floor(Math.random() * fList.length)];
+            const l = NAME_LIB[r].l[Math.floor(Math.random() * NAME_LIB[r].l.length)];
+            const subtypes = SUBTYPES[r];
+            const subtype = subtypes[Math.floor(Math.random() * subtypes.length)];
+            const bg = BACKGROUND_THEMES[Math.floor(Math.random() * BACKGROUND_THEMES.length)];
+            const expr = EXPRESSIONS[Math.floor(Math.random() * EXPRESSIONS.length)];
+            const angle = CAMERA_ANGLES[Math.floor(Math.random() * CAMERA_ANGLES.length)];
+            const flav = CHARACTER_FLAVOR[Math.floor(Math.random() * CHARACTER_FLAVOR.length)];
+            
+            return { 
+                name: `${f} ${l}`, origin: r, gender: gender, physicalSubtype: subtype, 
+                background: bg, expression: expr, cameraAngle: angle, flavor: flav 
+            };
+        }
+
+        // --- BUILDER LOGIC ---
+        function randomizeBuilderName() {
+            const result = getRandomNameAndOrigin();
+            builderState.name = result.name;
+            builderState.origin = result.origin;
+            builderState.gender = result.gender;
+            builderState.physicalSubtype = result.physicalSubtype;
+            builderState.background = result.background;
+            builderState.expression = result.expression;
+            builderState.cameraAngle = result.cameraAngle;
+            builderState.flavor = result.flavor;
+            
+            document.getElementById('builder-name').value = builderState.name;
+            rollSpray();
+        }
+
+        function rollSpray() {
+            const p1 = Math.floor(Math.random() * 50) + 15;
+            const p2 = Math.floor(Math.random() * (100 - p1 - 15)) + 15;
+            const p3 = 100 - p1 - p2;
+            builderState.spray = { pull: p1, center: p2, opp: p3 };
+            renderSprayChart();
+        }
+
+        function renderSprayChart() {
+            const container = document.getElementById('spray-points');
+            if (!container) return;
+            container.innerHTML = '';
+            const { pull, center, opp } = builderState.spray;
+            const createPoint = (x, y, op) => {
+                const div = document.createElement('div');
+                div.className = "absolute w-2 h-2 rounded-full spray-dot bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]";
+                div.style.left = x + '%';
+                div.style.top = y + '%';
+                div.style.opacity = op;
+                container.appendChild(div);
+            };
+            for(let i=0; i < pull/4; i++) createPoint(15 + Math.random()*25, 25 + Math.random()*45, pull/100);
+            for(let i=0; i < center/4; i++) createPoint(45 + Math.random()*10, 15 + Math.random()*40, center/100);
+            for(let i=0; i < opp/4; i++) createPoint(60 + Math.random()*25, 25 + Math.random()*45, opp/100);
+            const label = pull > center && pull > opp ? "Pull Hitter" : opp > pull && opp > center ? "Opposite Field Hitter" : "Balanced Hitter";
+            document.getElementById('spray-label').innerText = label;
+        }
+
+        function updateBuilderUI() {
+            builderState.exp = document.getElementById('builder-exp').value;
+            builderState.isStar = document.getElementById('builder-star').checked;
+            builderState.name = document.getElementById('builder-name').value;
+            builderState.pos1 = document.getElementById('builder-pos-1').value;
+            
+            const hasUtility = builderState.intangibles.some(i => i.name === "Utility Player");
+            const pos2Container = document.getElementById('secondary-pos-container');
+            if (hasUtility) {
+                pos2Container.classList.remove('hidden');
+                builderState.pos2 = document.getElementById('builder-pos-2').value;
+            } else {
+                pos2Container.classList.add('hidden');
+                builderState.pos2 = "";
+            }
+
+            let ptsLimit = (builderState.exp === 'Rookie' ? 10 : builderState.exp === 'Journeyman' ? 15 : 20) + (builderState.isStar ? 10 : 0);
+            let salaryBase = (builderState.exp === 'Rookie' ? 10 : builderState.exp === 'Journeyman' ? 20 : 40) + (builderState.isStar ? 20 : 0);
+
+            let ptsUsed = builderState.intangibles.reduce((acc, i) => acc + i.cost, 0);
+            Object.values(builderState.skills).forEach(s => {
+                ptsUsed += (s.b * 1 + s.r * 2 + s.k * -1) - 2;
+            });
+
+            const skillContainer = document.getElementById('builder-skills');
+            skillContainer.innerHTML = '';
+            let totalRed = 0;
+            
+            SKILLS.forEach(sName => {
+                const s = builderState.skills[sName];
+                totalRed += s.r;
+                const div = document.createElement('div');
+                div.className = "flex flex-col p-4 bg-slate-50 rounded-2xl border border-slate-100";
+                div.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <div>
+                            <div class="text-[10px] font-bold uppercase text-slate-400">${sName}</div>
+                            <div class="flex mt-1">
+                                ${Array(s.b).fill('<div class="die-icon bg-dlb-blue">B</div>').join('')}
+                                ${Array(s.r).fill('<div class="die-icon bg-dlb-red">R</div>').join('')}
+                                ${Array(s.k).fill('<div class="die-icon bg-dlb-black">K</div>').join('')}
+                            </div>
+                        </div>
+                        <div class="text-[9px] font-bold text-slate-300 italic uppercase">Pool: ${s.b + s.r + s.k}/5</div>
+                    </div>
+                    <div class="flex gap-2 justify-between mt-2">
+                        <div class="flex gap-1">
+                            <button onclick="adjustSkill('${sName}','b',1)" class="w-8 h-8 flex items-center justify-center bg-white border rounded font-bold text-[10px] text-blue-500">B+</button>
+                            <button onclick="adjustSkill('${sName}','b',-1)" class="w-8 h-8 flex items-center justify-center bg-white border rounded font-bold text-[10px]">-</button>
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="adjustSkill('${sName}','r',1)" class="w-8 h-8 flex items-center justify-center bg-red-50 border border-red-200 rounded font-bold text-[10px] text-red-500">R+</button>
+                            <button onclick="upgradeToRed('${sName}')" class="w-8 h-8 flex items-center justify-center bg-orange-50 border border-orange-200 rounded font-bold text-[10px] text-orange-500">↑R</button>
+                            <button onclick="adjustSkill('${sName}','r',-1)" class="w-8 h-8 flex items-center justify-center bg-red-50 border border-red-200 rounded font-bold text-[10px]">-</button>
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="adjustSkill('${sName}','k',1)" class="w-8 h-8 flex items-center justify-center bg-black border border-black rounded font-bold text-[10px] text-white">K+</button>
+                            <button onclick="adjustSkill('${sName}','k',-1)" class="w-8 h-8 flex items-center justify-center bg-slate-200 border border-slate-300 rounded font-bold text-[10px] text-slate-600">-</button>
+                        </div>
+                    </div>`;
+                skillContainer.appendChild(div);
+            });
+
+            let fatigueCount = 0;
+            if (builderState.exp === 'Rookie') fatigueCount = totalRed;
+            else if (builderState.exp === 'Journeyman') fatigueCount = Math.floor(totalRed / 2);
+            else if (builderState.exp === 'Veteran') fatigueCount = Math.floor(totalRed / 3);
+
+            if (builderState.intangibles.some(i => i.name === "Durable")) {
+                fatigueCount = Math.max(0, fatigueCount - 1);
+            }
+
+            const fatigueContainer = document.getElementById('builder-fatigue');
+            fatigueContainer.innerHTML = Array(fatigueCount).fill('<div class="die-icon bg-dlb-black !border-red-900 !text-red-500">K</div>').join('');
+            if(fatigueCount === 0) fatigueContainer.innerHTML = '<span class="text-[10px] text-slate-300 uppercase font-bold italic tracking-tighter">Peak Conditioning</span>';
+            document.getElementById('fatigue-meta').innerText = `Total Red Dice: ${totalRed} // Ratio: 1:${builderState.exp === 'Rookie' ? '1' : builderState.exp === 'Journeyman' ? '2' : '3'}`;
+
+            let currentSalary = salaryBase;
+            Object.values(builderState.skills).forEach(s => {
+                currentSalary += (s.r * 5); 
+                if(s.b + s.r + s.k >= 5) currentSalary += 5; 
+            });
+            builderState.intangibles.forEach(i => currentSalary += (i.sal || 0));
+            currentSalary -= fatigueCount; 
+
+            document.getElementById('builder-points').innerText = `${ptsUsed} / ${ptsLimit} PTS`;
+            document.getElementById('builder-points').className = ptsUsed > ptsLimit ? 'text-4xl font-black text-red-500' : 'text-4xl font-black';
+            document.getElementById('builder-salary').innerText = `$${currentSalary}K`;
+
+            const iList = document.getElementById('builder-intangibles');
+            iList.innerHTML = '';
+            INTANGIBLES_DATA.forEach((item, idx) => {
+                const active = builderState.intangibles.some(i => i.name === item.name);
+                const btn = document.createElement('button');
+                btn.onclick = () => toggleIntangible(idx);
+                btn.className = `p-3 rounded-2xl border-2 text-left transition-all ${active ? 'border-yellow-500 bg-yellow-50 shadow-inner' : 'border-slate-100 bg-slate-50 hover:bg-slate-100'}`;
+                btn.innerHTML = `
+                    <div class="font-bold text-xs flex justify-between items-center">
+                        <span class="${active ? 'text-yellow-700' : 'text-slate-800'}">${item.name}</span>
+                        <span class="text-[10px] font-mono ${active ? 'text-yellow-600' : 'text-slate-400'}">${item.cost} PTS</span>
+                    </div>
+                    <p class="text-[9px] text-slate-500 leading-tight mt-1 italic">${item.desc}</p>`;
+                iList.appendChild(btn);
+            });
+        }
+
+        function adjustSkill(skill, type, delta) {
+            const s = builderState.skills[skill];
+            if (delta > 0) {
+                if ((s.b + s.r + s.k) >= 5) return;
+                if (type === 'k' && s.k >= 2) return; 
+            } else {
+                if (s[type] <= 0) return;
+            }
+            s[type] += delta;
+            updateBuilderUI();
+        }
+
+        function upgradeToRed(skill) {
+            const s = builderState.skills[skill];
+            if (s.b > 0 && (s.b + s.r + s.k) <= 5) {
+                s.b--;
+                s.r++;
+                updateBuilderUI();
+            }
+        }
+
+        function toggleIntangible(idx) {
+            const item = INTANGIBLES_DATA[idx];
+            const foundIdx = builderState.intangibles.findIndex(i => i.name === item.name);
+            if (foundIdx > -1) builderState.intangibles.splice(foundIdx, 1);
+            else builderState.intangibles.push(item);
+            updateBuilderUI();
+        }
+
+        function resetBuilder() {
+            builderState = {
+                name: "", exp: "Rookie", isStar: false,
+                pos1: "P", pos2: "", origin: "american", gender: "male",
+                physicalSubtype: "African American",
+                background: "",
+                expression: "",
+                cameraAngle: "",
+                flavor: "",
+                skills: SKILLS.reduce((acc, s) => ({...acc, [s]: {b:2, r:0, k:0}}), {}),
+                intangibles: [],
+                spray: { pull: 33, center: 34, opp: 33 }
+            };
+            document.getElementById('builder-name').value = "";
+            document.getElementById('builder-exp').value = "Rookie";
+            document.getElementById('builder-star').checked = false;
+            document.getElementById('builder-pos-1').value = "P";
+            document.getElementById('builder-pos-2').value = "";
+            updateBuilderUI();
+            renderSprayChart();
+        }
+
+        function sendToVisualizer() {
+            if (!builderState.name) randomizeBuilderName();
+            document.getElementById('viz-name').value = builderState.name;
+            switchTab('tab-visualizer');
+            renderPortrait();
+        }
+
+        // --- LEAGUE LOGIC ---
+        function generateRoster() {
+            generatedLeague = [];
+            for (let i = 0; i < 100; i++) {
+                const res = getRandomNameAndOrigin();
+                const roll = Math.random();
+                let exp = roll < 0.5 ? 'Rookie' : roll < 0.85 ? 'Journeyman' : 'Veteran';
+                const isStar = Math.random() < 0.1;
+                
+                const iLimit = (exp === 'Rookie' ? 1 : exp === 'Journeyman' ? 2 : 4) + (isStar ? 1 : 0);
+                const pool = [...INTANGIBLES_DATA].sort(() => 0.5 - Math.random());
+                const selectedIntangibles = pool.slice(0, iLimit);
+                const hasUtility = selectedIntangibles.some(i => i.name === "Utility Player");
+                const intangibleNames = selectedIntangibles.map(i => i.name).join(", ");
+
+                let p1 = POSITION_LIST[Math.floor(Math.random() * POSITION_LIST.length)];
+                let posDisplay = p1;
+                if (hasUtility) {
+                    let p2;
+                    do { p2 = POSITION_LIST[Math.floor(Math.random() * POSITION_LIST.length)]; } while (p2 === p1);
+                    posDisplay = `${p1}/${p2}`;
+                }
+                
+                const skills = {Arm:{b:2,r:0,k:0}, Bat:{b:2,r:0,k:0}, Glove:{b:2,r:0,k:0}, Legs:{b:2,r:0,k:0}};
+                const skillPool = (exp === 'Rookie' ? 5 : exp === 'Journeyman' ? 8 : 12) + (isStar ? 6 : 0);
+                let rem = skillPool;
+                let redDice = 0;
+                
+                while (rem > 0) {
+                    const keys = Object.keys(skills);
+                    const k = keys[Math.floor(Math.random()*4)];
+                    const s = skills[k];
+                    if (s.b + s.r + s.k < 5) {
+                        const rAction = Math.random();
+                        if (rAction > 0.6) { s.b++; rem--; }
+                        else if (rAction > 0.2) { s.r++; rem -= 2; redDice++; }
+                        else { s.k++; rem += 1; }
+                    } else break;
+                }
+
+                let fatigue = 0;
+                if (exp === 'Rookie') fatigue = redDice;
+                else if (exp === 'Journeyman') fatigue = Math.floor(redDice / 2);
+                else if (exp === 'Veteran') fatigue = Math.floor(redDice / 3);
+                if (selectedIntangibles.some(i => i.name === "Durable")) fatigue = Math.max(0, fatigue - 1);
+
+                let sal = (exp === 'Rookie' ? 10 : exp === 'Journeyman' ? 20 : 40) + (isStar ? 20 : 0);
+                sal += (redDice * 5) - fatigue;
+                selectedIntangibles.forEach(i => sal += (i.sal || 0));
+
+                generatedLeague.push({ 
+                    name: res.name + (isStar ? ' ★' : ''), 
+                    exp, pos: posDisplay, skills, sal, isStar, fatigue, redDice, 
+                    intangibles: intangibleNames,
+                    origin: res.origin,
+                    gender: res.gender,
+                    physicalSubtype: res.physicalSubtype,
+                    background: res.background,
+                    expression: res.expression,
+                    cameraAngle: res.cameraAngle,
+                    flavor: res.flavor
+                });
+            }
+            renderLeagueTable();
+        }
+
+        function renamePlayer(idx) {
+            const isStar = generatedLeague[idx].isStar;
+            const res = getRandomNameAndOrigin();
+            generatedLeague[idx].name = res.name + (isStar ? ' ★' : '');
+            generatedLeague[idx].origin = res.origin;
+            generatedLeague[idx].gender = res.gender;
+            generatedLeague[idx].physicalSubtype = res.physicalSubtype;
+            generatedLeague[idx].background = res.background;
+            generatedLeague[idx].expression = res.expression;
+            generatedLeague[idx].cameraAngle = res.cameraAngle;
+            generatedLeague[idx].flavor = res.flavor;
+            renderLeagueTable();
+        }
+
+        function renderLeagueTable() {
+            const body = document.getElementById('league-body');
+            body.innerHTML = '';
+            generatedLeague.forEach((p, idx) => {
+                const tr = document.createElement('tr');
+                if (p.isStar) tr.className = "bg-yellow-50";
+                tr.innerHTML = `
+                    <td class="p-4 font-black italic uppercase cursor-pointer hover:text-blue-500 transition-colors" onclick="renamePlayer(${idx})">${p.name}</td>
+                    <td class="p-4 text-xs font-mono text-slate-500">${p.exp}</td>
+                    <td class="p-4 font-bold text-blue-600">${p.pos}</td>
+                    <td class="p-4 text-[9px] text-slate-500 italic max-w-[150px] truncate" title="${p.intangibles}">${p.intangibles}</td>
+                    <td class="p-4 text-center font-mono font-bold">${p.skills.Arm.b}B/${p.skills.Arm.r}R</td>
+                    <td class="p-4 text-center font-mono font-bold">${p.skills.Bat.b}B/${p.skills.Bat.r}R</td>
+                    <td class="p-4 text-center font-mono font-bold">${p.skills.Glove.b}B/${p.skills.Glove.r}R</td>
+                    <td class="p-4 text-center font-mono font-bold">${p.skills.Legs.b}B/${p.skills.Legs.r}R</td>
+                    <td class="p-4 text-center font-mono font-black text-red-500">${p.fatigue}</td>
+                    <td class="p-4 text-right font-black text-green-600">$${p.sal}K</td>
+                    <td class="p-4">
+                        <button onclick="visualizeFromLeague(${idx})" class="text-[10px] font-black uppercase text-blue-500 hover:underline">Visualize</button>
+                    </td>
+                `;
+                body.appendChild(tr);
+            });
+            document.getElementById('csv-btn').classList.remove('hidden');
+        }
+
+        function visualizeFromLeague(idx) {
+            const p = generatedLeague[idx];
+            builderState.origin = p.origin;
+            builderState.gender = p.gender;
+            builderState.physicalSubtype = p.physicalSubtype;
+            builderState.background = p.background;
+            builderState.expression = p.expression;
+            builderState.cameraAngle = p.cameraAngle;
+            builderState.flavor = p.flavor;
+            
+            document.getElementById('viz-name').value = p.name.replace(' ★', '');
+            switchTab('tab-visualizer');
+            renderPortrait();
+        }
+
+        function exportCSV() {
+            let csv = "Name,Exp,Pos,Intangibles,Salary,Arm,Bat,Glove,Legs,Fatigue,Gender,Subtype,Background\n";
+            generatedLeague.forEach(p => {
+                csv += `"${p.name}","${p.exp}","${p.pos}","${p.intangibles}","${p.sal}","${p.skills.Arm.b}B${p.skills.Arm.r}R","${p.skills.Bat.b}B${p.skills.Bat.r}R","${p.skills.Glove.b}B${p.skills.Glove.r}R","${p.skills.Legs.b}B${p.skills.Legs.r}R","${p.fatigue}","${p.gender}","${p.physicalSubtype}","${p.background}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            saveAs(blob, "DLB_League_Roster.csv");
+        }
+
+        // --- VISUALIZER LOGIC ---
+        function setVizStyle(style) {
+            currentVizStyle = style;
+            const bg = document.getElementById('viz-toggle-bg');
+            const labelR = document.getElementById('label-realistic');
+            const labelA = document.getElementById('label-anime');
+            const labelS = document.getElementById('label-stylized');
+            
+            // Remove all active states
+            [labelR, labelA, labelS].forEach(l => {
+                l.classList.remove('text-blue-600');
+                l.classList.add('text-slate-400');
+            });
+
+            if (style === 'realistic') {
+                bg.style.transform = 'translateX(0)';
+                labelR.classList.add('text-blue-600');
+                labelR.classList.remove('text-slate-400');
+            } else if (style === 'anime') {
+                bg.style.transform = 'translateX(100%)';
+                labelA.classList.add('text-blue-600');
+                labelA.classList.remove('text-slate-400');
+            } else {
+                bg.style.transform = 'translateX(200%)';
+                labelS.classList.add('text-blue-600');
+                labelS.classList.remove('text-slate-400');
+            }
+        }
+
+        async function renderPortrait() {
+            const nameInput = document.getElementById('viz-name').value;
+            if (!nameInput) return;
+            document.getElementById('portrait-result').classList.remove('hidden');
+            document.getElementById('viz-shimmer').classList.remove('hidden');
+            document.getElementById('viz-img').classList.add('hidden');
+
+            let styleDesc = "";
+            if (currentVizStyle === 'stylized') {
+                styleDesc = "Masterful oil painting style with visible expressive brushwork and rich textures. Painterly execution with soulful strokes and artistic highlights. Impressionistic background with soft blended colors. The character is wearing a solid hue baseball jersey and blank cap. No text, no logos, no ink outlines. Pure fine art aesthetic.";
+            } else if (currentVizStyle === 'anime') {
+                styleDesc = "Modern high-fidelity realistic anime art style. Detailed cel-shading, vibrant colors, cinematic composition. The character has highly detailed anime features but maintains realistic proportions. Wearing a solid color baseball jersey and blank cap. No text allowed.";
+            } else {
+                styleDesc = "Professional sports photography style. Hyper-realistic photorealistic textures. Rich, vibrant color photography. The player is wearing a richly colored solid-hue uniform with zero branding, zero logos, and absolute zero text.";
+            }
+            
+            const subtype = builderState.physicalSubtype || "diverse appearance";
+            const genderDescriptor = builderState.gender === 'female' ? "female athlete" : "male athlete";
+            
+            const bgTheme = builderState.background || BACKGROUND_THEMES[Math.floor(Math.random() * BACKGROUND_THEMES.length)];
+            const expression = builderState.expression || EXPRESSIONS[Math.floor(Math.random() * EXPRESSIONS.length)];
+            const cameraAngle = builderState.cameraAngle || CAMERA_ANGLES[Math.floor(Math.random() * CAMERA_ANGLES.length)];
+            const flavor = builderState.flavor || CHARACTER_FLAVOR[Math.floor(Math.random() * CHARACTER_FLAVOR.length)];
+            
+            let lightingInstruction = "The final image MUST be in full natural color with realistic skin tones.";
+            if (currentVizStyle === 'anime') {
+                lightingInstruction = "The final image MUST feature dramatic anime-style cinematic lighting with sharp highlights and soft glows.";
+            } else if (currentVizStyle === 'stylized') {
+                lightingInstruction = "The final image MUST feature warm, dramatic lighting with deep shadows and vibrant impasto highlights.";
+            } else if (bgTheme.includes("sunset")) {
+                lightingInstruction += " Use warm golden hour lighting on the subject's face.";
+            } else if (bgTheme.includes("sunny afternoon")) {
+                lightingInstruction += " Use bright direct sunlight with high-contrast shadows.";
+            } else if (bgTheme.includes("night game")) {
+                lightingInstruction += " Use strong artificial floodlight illumination with cool rim lighting.";
+            }
+
+            const prompt = `Professional ${cameraAngle} portrait of a ${genderDescriptor} with ${subtype} physical appearance and ${expression}. The athlete is ${flavor}. Wearing a clean, solid-colored baseball cap and a plain, solid-colored athletic button-down shirt. The baseball cap MUST be completely blank, with a smooth, unadorned fabric surface on the front; it has NO embroidery, NO letters, NO graphics, and NO logos. The button-down shirt is a plain solid color with NO branding, NO text, and NO insignia. Background is a ${bgTheme}. ${styleDesc}. ${lightingInstruction} Zero words or letters allowed anywhere in the image. Sharp focus on eyes.`;
+
+            try {
+                const url = await callImagen(prompt);
+                if (url) {
+                    document.getElementById('viz-img').src = url;
+                }
+            } catch (e) {
+                console.error("Render error:", e);
+                document.getElementById('viz-shimmer').innerHTML = '<span class="text-red-500 text-xs">Render Failed. Click to Retry.</span>';
+            }
+        }
+
+        function downloadViz() {
+            const dataUrl = document.getElementById('viz-img').src;
+            const name = document.getElementById('viz-name').value.replace(/\s+/g, '_').toLowerCase();
+            saveAs(dataUrl, `${name}_portrait.png`);
+        }
+
+        async function callImagen(promptText) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
+            const payload = { instances: [{ prompt: promptText }], parameters: { sampleCount: 1 } };
+            let retries = 0;
+            const maxRetries = 5;
+            const backoff = [1000, 2000, 4000, 8000, 16000];
+            while (retries <= maxRetries) {
+                try {
+                    const res = await fetch(url, { method: 'POST', body: JSON.stringify(payload) });
+                    if (!res.ok) throw new Error("API Failure");
+                    const result = await res.json();
+                    if (result.predictions?.[0]?.bytesBase64Encoded) return `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
+                    return null;
+                } catch (e) {
+                    if (retries === maxRetries) throw e;
+                    await new Promise(r => setTimeout(r, backoff[retries]));
+                    retries++;
+                }
+            }
+        }
+
+        // --- INIT ---
+        randomizeBuilderName();
+        updateBuilderUI();
+        renderSprayChart();
+        setVizStyle('realistic');
+    </script>
+</body>
+</html>

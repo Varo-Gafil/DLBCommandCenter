@@ -227,16 +227,42 @@
         <!-- SECTION: LEAGUE GENERATOR -->
         <section id="tab-league" class="tab-content hidden animate-in fade-in duration-300">
             <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="p-8 bg-slate-50 border-b border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="p-8 bg-slate-50 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h2 class="text-xl font-black uppercase italic text-slate-900">League Registry</h2>
                         <p class="text-xs text-slate-500 uppercase font-mono">Simulating Diamond League Expansion</p>
                     </div>
-                    <div class="flex gap-3">
-                        <button onclick="generateRoster()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-2xl font-black uppercase italic text-sm transition-all shadow-md">Generate 100 Players</button>
-                        <button onclick="exportCSV()" id="csv-btn" class="hidden bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-2xl font-black uppercase italic text-sm transition-all">Download CSV</button>
+                    <div class="flex flex-col items-end gap-3 w-full md:w-auto">
+                        <div class="w-full md:w-72">
+                            <!-- 3-Way Style Toggle (League) -->
+                            <div class="relative w-full h-10 bg-white rounded-xl p-1 flex select-none overflow-hidden border border-slate-200 shadow-sm">
+                                <div id="league-toggle-bg" class="absolute top-1 bottom-1 left-1 w-[calc(33.33%-4px)] bg-slate-100 rounded-lg shadow-inner transition-all duration-300 ease-in-out translate-x-0"></div>
+                                <button onclick="setVizStyle('realistic')" class="relative z-10 flex-1 flex items-center justify-center text-[9px] font-black uppercase italic transition-colors duration-300 text-blue-600" id="league-label-realistic">Realistic</button>
+                                <button onclick="setVizStyle('anime')" class="relative z-10 flex-1 flex items-center justify-center text-[9px] font-black uppercase italic transition-colors duration-300 text-slate-400" id="league-label-anime">Anime</button>
+                                <button onclick="setVizStyle('stylized')" class="relative z-10 flex-1 flex items-center justify-center text-[9px] font-black uppercase italic transition-colors duration-300 text-slate-400" id="league-label-stylized">Painterly</button>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 flex-wrap justify-end">
+                            <button onclick="generateRoster()" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-black uppercase italic text-xs transition-all shadow-md">Generate 100 Players</button>
+                            <button onclick="exportCSV()" id="csv-btn" class="hidden bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl font-black uppercase italic text-xs transition-all">Download CSV</button>
+                            <button onclick="batchDownloadLeague()" id="batch-btn" class="hidden bg-purple-600 hover:bg-purple-500 text-white px-5 py-2.5 rounded-xl font-black uppercase italic text-xs transition-all shadow-md flex items-center gap-2">
+                                <span>📦</span> Zip & Download All
+                            </button>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Batch Progress Bar -->
+                <div id="league-progress-container" class="hidden px-8 py-4 bg-white border-b border-slate-100">
+                    <div class="flex justify-between items-center text-[10px] font-bold uppercase text-slate-500 mb-2">
+                        <span id="league-progress-text">Initializing Neural Matrix...</span>
+                        <span id="league-progress-count" class="text-blue-500 font-black">0 / 100</span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                        <div id="league-progress-bar" class="h-full bg-purple-500 transition-all duration-300" style="width: 0%;"></div>
+                    </div>
+                </div>
+
                 <div class="overflow-x-auto max-h-[600px]">
                     <table class="w-full text-left text-sm" id="league-table">
                         <thead class="bg-slate-900 text-white sticky top-0 uppercase text-[10px] font-mono tracking-widest">
@@ -752,6 +778,7 @@
                 body.appendChild(tr);
             });
             document.getElementById('csv-btn').classList.remove('hidden');
+            document.getElementById('batch-btn').classList.remove('hidden');
         }
 
         function visualizeFromLeague(idx) {
@@ -769,11 +796,16 @@
             renderPortrait();
         }
 
-        function exportCSV() {
+        function getCSVString() {
             let csv = "Name,Exp,Pos,Intangibles,Salary,Arm,Bat,Glove,Legs,Fatigue,Gender,Subtype,Background\n";
             generatedLeague.forEach(p => {
                 csv += `"${p.name}","${p.exp}","${p.pos}","${p.intangibles}","${p.sal}","${p.skills.Arm.b}B${p.skills.Arm.r}R","${p.skills.Bat.b}B${p.skills.Bat.r}R","${p.skills.Glove.b}B${p.skills.Glove.r}R","${p.skills.Legs.b}B${p.skills.Legs.r}R","${p.fatigue}","${p.gender}","${p.physicalSubtype}","${p.background}"\n`;
             });
+            return csv;
+        }
+
+        function exportCSV() {
+            const csv = getCSVString();
             const blob = new Blob([csv], { type: 'text/csv' });
             saveAs(blob, "DLB_League_Roster.csv");
         }
@@ -786,34 +818,38 @@
             const labelA = document.getElementById('label-anime');
             const labelS = document.getElementById('label-stylized');
             
+            const bgLeague = document.getElementById('league-toggle-bg');
+            const lLabelR = document.getElementById('league-label-realistic');
+            const lLabelA = document.getElementById('league-label-anime');
+            const lLabelS = document.getElementById('league-label-stylized');
+            
             // Remove all active states
-            [labelR, labelA, labelS].forEach(l => {
-                l.classList.remove('text-blue-600');
-                l.classList.add('text-slate-400');
+            [labelR, labelA, labelS, lLabelR, lLabelA, lLabelS].forEach(l => {
+                if(l) {
+                    l.classList.remove('text-blue-600');
+                    l.classList.add('text-slate-400');
+                }
             });
 
             if (style === 'realistic') {
-                bg.style.transform = 'translateX(0)';
-                labelR.classList.add('text-blue-600');
-                labelR.classList.remove('text-slate-400');
+                if(bg) bg.style.transform = 'translateX(0)';
+                if(bgLeague) bgLeague.style.transform = 'translateX(0)';
+                if(labelR) { labelR.classList.add('text-blue-600'); labelR.classList.remove('text-slate-400'); }
+                if(lLabelR) { lLabelR.classList.add('text-blue-600'); lLabelR.classList.remove('text-slate-400'); }
             } else if (style === 'anime') {
-                bg.style.transform = 'translateX(100%)';
-                labelA.classList.add('text-blue-600');
-                labelA.classList.remove('text-slate-400');
+                if(bg) bg.style.transform = 'translateX(100%)';
+                if(bgLeague) bgLeague.style.transform = 'translateX(100%)';
+                if(labelA) { labelA.classList.add('text-blue-600'); labelA.classList.remove('text-slate-400'); }
+                if(lLabelA) { lLabelA.classList.add('text-blue-600'); lLabelA.classList.remove('text-slate-400'); }
             } else {
-                bg.style.transform = 'translateX(200%)';
-                labelS.classList.add('text-blue-600');
-                labelS.classList.remove('text-slate-400');
+                if(bg) bg.style.transform = 'translateX(200%)';
+                if(bgLeague) bgLeague.style.transform = 'translateX(200%)';
+                if(labelS) { labelS.classList.add('text-blue-600'); labelS.classList.remove('text-slate-400'); }
+                if(lLabelS) { lLabelS.classList.add('text-blue-600'); lLabelS.classList.remove('text-slate-400'); }
             }
         }
 
-        async function renderPortrait() {
-            const nameInput = document.getElementById('viz-name').value;
-            if (!nameInput) return;
-            document.getElementById('portrait-result').classList.remove('hidden');
-            document.getElementById('viz-shimmer').classList.remove('hidden');
-            document.getElementById('viz-img').classList.add('hidden');
-
+        function buildPrompt(playerObj) {
             let styleDesc = "";
             if (currentVizStyle === 'stylized') {
                 styleDesc = "Masterful oil painting style with visible expressive brushwork and rich textures. Painterly execution with soulful strokes and artistic highlights. Impressionistic background with soft blended colors. The character is wearing a solid hue baseball jersey and blank cap. No text, no logos, no ink outlines. Pure fine art aesthetic.";
@@ -823,13 +859,12 @@
                 styleDesc = "Professional sports photography style. Hyper-realistic photorealistic textures. Rich, vibrant color photography. The player is wearing a richly colored solid-hue uniform with zero branding, zero logos, and absolute zero text.";
             }
             
-            const subtype = builderState.physicalSubtype || "diverse appearance";
-            const genderDescriptor = builderState.gender === 'female' ? "female athlete" : "male athlete";
-            
-            const bgTheme = builderState.background || BACKGROUND_THEMES[Math.floor(Math.random() * BACKGROUND_THEMES.length)];
-            const expression = builderState.expression || EXPRESSIONS[Math.floor(Math.random() * EXPRESSIONS.length)];
-            const cameraAngle = builderState.cameraAngle || CAMERA_ANGLES[Math.floor(Math.random() * CAMERA_ANGLES.length)];
-            const flavor = builderState.flavor || CHARACTER_FLAVOR[Math.floor(Math.random() * CHARACTER_FLAVOR.length)];
+            const subtype = playerObj.physicalSubtype || "diverse appearance";
+            const genderDescriptor = playerObj.gender === 'female' ? "female athlete" : "male athlete";
+            const bgTheme = playerObj.background || "blurred professional baseball stadium";
+            const expression = playerObj.expression || "determined and focused";
+            const cameraAngle = playerObj.cameraAngle || "close-up headshot";
+            const flavor = playerObj.flavor || "wearing tactical eye black under the eyes";
             
             let lightingInstruction = "The final image MUST be in full natural color with realistic skin tones.";
             if (currentVizStyle === 'anime') {
@@ -844,7 +879,29 @@
                 lightingInstruction += " Use strong artificial floodlight illumination with cool rim lighting.";
             }
 
-            const prompt = `Professional ${cameraAngle} portrait of a ${genderDescriptor} with ${subtype} physical appearance and ${expression}. The athlete is ${flavor}. Wearing a clean, solid-colored baseball cap and a plain, solid-colored athletic button-down shirt. The baseball cap MUST be completely blank, with a smooth, unadorned fabric surface on the front; it has NO embroidery, NO letters, NO graphics, and NO logos. The button-down shirt is a plain solid color with NO branding, NO text, and NO insignia. Background is a ${bgTheme}. ${styleDesc}. ${lightingInstruction} Zero words or letters allowed anywhere in the image. Sharp focus on eyes.`;
+            return `Professional ${cameraAngle} portrait of a ${genderDescriptor} with ${subtype} physical appearance and ${expression}. The athlete is ${flavor}. Wearing a clean, solid-colored baseball cap and a plain, solid-colored athletic button-down shirt. The baseball cap MUST be completely blank, with a smooth, unadorned fabric surface on the front; it has NO embroidery, NO letters, NO graphics, and NO logos. The button-down shirt is a plain solid color with NO branding, NO text, and NO insignia. Background is a ${bgTheme}. ${styleDesc}. ${lightingInstruction} Zero words or letters allowed anywhere in the image. Sharp focus on eyes.`;
+        }
+
+        async function renderPortrait() {
+            const nameInput = document.getElementById('viz-name').value;
+            if (!nameInput) return;
+            document.getElementById('portrait-result').classList.remove('hidden');
+            document.getElementById('viz-shimmer').classList.remove('hidden');
+            document.getElementById('viz-img').classList.add('hidden');
+
+            const bgTheme = builderState.background || BACKGROUND_THEMES[Math.floor(Math.random() * BACKGROUND_THEMES.length)];
+            const expression = builderState.expression || EXPRESSIONS[Math.floor(Math.random() * EXPRESSIONS.length)];
+            const cameraAngle = builderState.cameraAngle || CAMERA_ANGLES[Math.floor(Math.random() * CAMERA_ANGLES.length)];
+            const flavor = builderState.flavor || CHARACTER_FLAVOR[Math.floor(Math.random() * CHARACTER_FLAVOR.length)];
+            
+            const prompt = buildPrompt({
+                gender: builderState.gender,
+                physicalSubtype: builderState.physicalSubtype,
+                background: bgTheme,
+                expression: expression,
+                cameraAngle: cameraAngle,
+                flavor: flavor
+            });
 
             try {
                 const url = await callImagen(prompt);
@@ -861,6 +918,68 @@
             const dataUrl = document.getElementById('viz-img').src;
             const name = document.getElementById('viz-name').value.replace(/\s+/g, '_').toLowerCase();
             saveAs(dataUrl, `${name}_portrait.png`);
+        }
+
+        async function batchDownloadLeague() {
+            if (generatedLeague.length === 0) return;
+            
+            const batchBtn = document.getElementById('batch-btn');
+            const progressContainer = document.getElementById('league-progress-container');
+            const progressBar = document.getElementById('league-progress-bar');
+            const progressText = document.getElementById('league-progress-text');
+            const progressCount = document.getElementById('league-progress-count');
+            
+            batchBtn.disabled = true;
+            batchBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            progressContainer.classList.remove('hidden');
+            
+            const zip = new JSZip();
+            const portraitsFolder = zip.folder("portraits");
+            
+            for (let i = 0; i < generatedLeague.length; i++) {
+                const p = generatedLeague[i];
+                progressText.innerText = `Generating portrait for ${p.name.replace(' ★', '')}...`;
+                progressCount.innerText = `${i + 1} / ${generatedLeague.length}`;
+                progressBar.style.width = `${((i + 1) / generatedLeague.length) * 100}%`;
+                
+                const prompt = buildPrompt(p);
+                
+                try {
+                    const dataUrl = await callImagen(prompt);
+                    if (dataUrl) {
+                        const base64Data = dataUrl.split(',')[1];
+                        const safeName = p.name.replace(' ★', '').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                        portraitsFolder.file(`${safeName}_portrait.png`, base64Data, {base64: true});
+                    }
+                    // Wait 1.2s to respect API rate limits
+                    await new Promise(r => setTimeout(r, 1200));
+                } catch (e) {
+                    console.error(`Failed to generate portrait for ${p.name}`, e);
+                }
+            }
+            
+            progressText.innerText = `Packing ZIP Archive...`;
+            
+            // Add CSV
+            const csv = getCSVString();
+            zip.file("DLB_League_Roster.csv", csv);
+            
+            // Generate and download zip
+            try {
+                const content = await zip.generateAsync({type:"blob"});
+                saveAs(content, "DLB_Full_League_Package.zip");
+                progressText.innerText = `Complete!`;
+            } catch (e) {
+                console.error("Zip generation failed", e);
+                progressText.innerText = `Error packing ZIP!`;
+            }
+            
+            setTimeout(() => {
+                progressContainer.classList.add('hidden');
+                batchBtn.disabled = false;
+                batchBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                progressBar.style.width = '0%';
+            }, 3000);
         }
 
         async function callImagen(promptText) {

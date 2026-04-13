@@ -84,7 +84,7 @@
                     <h1 class="text-2xl font-black italic tracking-tighter text-white uppercase leading-none">
                         DLB <span class="text-blue-500">Command Center</span>
                     </h1>
-                    <p class="text-[10px] font-mono text-slate-400 mt-1 tracking-widest uppercase italic">System v7.2 // Painterly Stylization Update</p>
+                    <p class="text-[10px] font-mono text-slate-400 mt-1 tracking-widest uppercase italic">System v7.3 // Super Mega Update</p>
                 </div>
             </div>
             <nav class="flex gap-8 text-sm font-bold uppercase tracking-tight text-slate-400" id="mainNav">
@@ -232,14 +232,26 @@
                         <h2 class="text-xl font-black uppercase italic text-slate-900">League Registry</h2>
                         <p class="text-xs text-slate-500 uppercase font-mono">Simulating Diamond League Expansion</p>
                     </div>
-                    <div class="flex flex-col items-end gap-3 w-full md:w-auto">
-                        <div class="w-full md:w-72">
-                            <!-- 3-Way Style Toggle (League) -->
-                            <div class="relative w-full h-10 bg-white rounded-xl p-1 flex select-none overflow-hidden border border-slate-200 shadow-sm">
-                                <div id="league-toggle-bg" class="absolute top-1 bottom-1 left-1 w-[calc(33.33%-4px)] bg-slate-100 rounded-lg shadow-inner transition-all duration-300 ease-in-out translate-x-0"></div>
-                                <button onclick="setVizStyle('realistic')" class="relative z-10 flex-1 flex items-center justify-center text-[9px] font-black uppercase italic transition-colors duration-300 text-blue-600" id="league-label-realistic">Realistic</button>
-                                <button onclick="setVizStyle('anime')" class="relative z-10 flex-1 flex items-center justify-center text-[9px] font-black uppercase italic transition-colors duration-300 text-slate-400" id="league-label-anime">Anime</button>
-                                <button onclick="setVizStyle('stylized')" class="relative z-10 flex-1 flex items-center justify-center text-[9px] font-black uppercase italic transition-colors duration-300 text-slate-400" id="league-label-stylized">Painterly</button>
+                    <div class="flex flex-col items-end gap-3 w-full xl:w-auto">
+                        <div class="flex flex-col md:flex-row gap-2 w-full justify-end">
+                            <div class="w-full md:w-32">
+                                <!-- 2-Way Framing Toggle (League) -->
+                                <div class="relative w-full h-10 bg-white rounded-xl p-1 flex select-none overflow-hidden border border-slate-200 shadow-sm">
+                                    <div id="league-framing-bg" class="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-slate-100 rounded-lg shadow-inner transition-all duration-300 ease-in-out translate-x-0"></div>
+                                    <button onclick="setFraming('portrait')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-blue-600" id="league-framing-portrait">Portrait</button>
+                                    <button onclick="setFraming('fullbody')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="league-framing-fullbody">Full Body</button>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-[450px]">
+                                <!-- 5-Way Style Toggle (League) -->
+                                <div class="relative w-full h-10 bg-white rounded-xl p-1 flex select-none overflow-hidden border border-slate-200 shadow-sm">
+                                    <div id="league-toggle-bg" class="absolute top-1 bottom-1 left-1 w-[calc(20%-4px)] bg-slate-100 rounded-lg shadow-inner transition-all duration-300 ease-in-out translate-x-0"></div>
+                                    <button onclick="setVizStyle('realistic')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-blue-600" id="league-label-realistic">Realistic</button>
+                                    <button onclick="setVizStyle('anime')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="league-label-anime">Anime</button>
+                                    <button onclick="setVizStyle('stylized')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="league-label-stylized">Painterly</button>
+                                    <button onclick="setVizStyle('action')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="league-label-action">Action</button>
+                                    <button onclick="setVizStyle('smb4')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="league-label-smb4">SMB4</button>
+                                </div>
                             </div>
                         </div>
                         <div class="flex gap-2 flex-wrap justify-end">
@@ -292,19 +304,30 @@
         <section id="tab-visualizer" class="tab-content hidden animate-in fade-in duration-300">
             <div class="max-w-4xl mx-auto">
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 mb-8">
-                    <div class="flex flex-col md:flex-row gap-6 mb-8">
+                    <div class="flex flex-col lg:flex-row gap-6 mb-8">
                         <div class="flex-1">
                             <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Subject Name</label>
                             <input type="text" id="viz-name" class="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl font-black italic uppercase text-lg outline-none focus:border-blue-500">
                         </div>
-                        <div class="md:w-72">
-                            <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Art Style</label>
-                            <!-- 3-Way Style Toggle -->
+                        <div class="w-full lg:w-40">
+                            <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Camera</label>
+                            <!-- 2-Way Framing Toggle -->
                             <div class="relative w-full h-12 bg-slate-100 rounded-2xl p-1 flex select-none overflow-hidden border border-slate-200 shadow-inner">
-                                <div id="viz-toggle-bg" class="absolute top-1 bottom-1 left-1 w-[calc(33.33%-4px)] bg-white rounded-xl shadow-sm transition-all duration-300 ease-in-out translate-x-0"></div>
-                                <button onclick="setVizStyle('realistic')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] font-black uppercase italic transition-colors duration-300" id="label-realistic">Realistic</button>
-                                <button onclick="setVizStyle('anime')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] font-black uppercase italic transition-colors duration-300" id="label-anime">Anime</button>
-                                <button onclick="setVizStyle('stylized')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] font-black uppercase italic transition-colors duration-300" id="label-stylized">Painterly</button>
+                                <div id="viz-framing-bg" class="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-white rounded-xl shadow-sm transition-all duration-300 ease-in-out translate-x-0"></div>
+                                <button onclick="setFraming('portrait')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-blue-600" id="label-framing-portrait">Portrait</button>
+                                <button onclick="setFraming('fullbody')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="label-framing-fullbody">Full Body</button>
+                            </div>
+                        </div>
+                        <div class="w-full lg:w-[450px]">
+                            <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Art Style</label>
+                            <!-- 5-Way Style Toggle -->
+                            <div class="relative w-full h-12 bg-slate-100 rounded-2xl p-1 flex select-none overflow-hidden border border-slate-200 shadow-inner">
+                                <div id="viz-toggle-bg" class="absolute top-1 bottom-1 left-1 w-[calc(20%-4px)] bg-white rounded-xl shadow-sm transition-all duration-300 ease-in-out translate-x-0"></div>
+                                <button onclick="setVizStyle('realistic')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-blue-600" id="label-realistic">Realistic</button>
+                                <button onclick="setVizStyle('anime')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="label-anime">Anime</button>
+                                <button onclick="setVizStyle('stylized')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="label-stylized">Painterly</button>
+                                <button onclick="setVizStyle('action')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="label-action">Action</button>
+                                <button onclick="setVizStyle('smb4')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="label-smb4">SMB4</button>
                             </div>
                         </div>
                     </div>
@@ -374,6 +397,11 @@
                 m: ["Min-jun", "Seo-jun", "Do-yoon", "Ha-joon", "Ji-ho", "Ju-won", "Ye-jun", "Si-woo", "Jun-seo", "Do-hyun", "Hyun-woo", "Ji-hun", "Min-kyu", "Woo-jin", "Sang-hun", "Yu-jun", "Joon-woo", "Ha-yul", "Gun-woo", "Seo-jin", "Yeon-woo", "Eun-woo", "Si-hoo", "Yu-chan", "Ji-won", "Dong-hyun", "Beom-jun", "Tae-yang", "Seung-woo", "Min-ho", "Jung-hoon", "Dae-won", "Chan-woo", "Hyun-bin", "Sung-jae", "Ji-sung"],
                 f: ["Seo-yeon", "Ji-woo", "Ha-yoon", "Min-seo", "Ji-yoon", "Seo-hyun", "Su-bin", "Ha-eun", "Ji-ah", "Yoon-seo", "Ji-min", "Chae-won", "Yoo-jin", "Da-eun", "Ji-won", "Ji-yoo", "Ha-yul", "Seo-yoon", "Seo-ah", "Ah-rin", "Na-yoon", "Yu-na", "Si-ah", "Chae-yoon", "Ha-rin", "Min-ah", "So-yul", "Hye-won", "Eun-seo", "So-yeon", "Yae-ji", "Da-in", "Na-young", "Su-min", "Ye-eun", "Ji-eun"], 
                 l: ["Kim", "Lee", "Park", "Choi", "Jung", "Kang", "Cho", "Yoon", "Jang", "Lim", "Han", "Oh", "Seo", "Shin", "Kwon", "Hwang", "Song", "An", "Hong", "Jeon", "Ko", "Moon", "Yang", "Son", "Bae", "Baek", "Heo", "Yu", "Nam", "Sim", "Ha", "Sung", "Cha", "Joo", "Woo", "Koo"] 
+            },
+            european: {
+                m: ["Liam", "Noah", "Oliver", "Elias", "Lucas", "Arthur", "Louis", "Leo", "Jonas", "Hugo", "Oscar", "Felix", "Finn", "Maximilian", "Victor", "Alexander", "Leon", "Mateo", "Milan", "Ivan", "Luka", "Jakub", "Filip", "Adam", "Emil", "Oskar", "Anton", "Gustav", "Axel", "Nils", "Sven", "Lars", "Bjorn", "Erik", "Kasper", "Bastian"],
+                f: ["Emma", "Mia", "Ida", "Sofia", "Anna", "Clara", "Lea", "Lina", "Mila", "Alice", "Juliette", "Chloe", "Camille", "Elena", "Laura", "Nina", "Eva", "Maria", "Johanna", "Frida", "Astrid", "Ingrid", "Agnes", "Klara", "Freja", "Maja", "Zofia", "Hanna", "Julia", "Natalia", "Lena", "Polina", "Daria", "Anastasia", "Viktoria", "Elsa"],
+                l: ["Muller", "Schmidt", "Schneider", "Fischer", "Weber", "Meyer", "Wagner", "Becker", "Hoffmann", "Dubois", "Lefebvre", "Leroy", "Moreau", "Simon", "Laurent", "Roux", "Johansson", "Andersson", "Karlsson", "Nilsson", "Hansen", "Pedersen", "Olsen", "Novak", "Kowalski", "Wisniewski", "Dabrowski", "Smirnov", "Ivanov", "Popov", "Sokolov", "Rossi", "Russo", "Ferrari", "Esposito", "Bianchi"]
             }
         };
 
@@ -381,7 +409,8 @@
             american: ["African American", "Caucasian", "South Asian American", "East Asian American", "Native American", "Biracial American"],
             latin: ["Afro-Latino", "Mestizo", "Light-skinned Latino", "Indigenous-Latino", "Caribbean Latino"],
             japanese: ["Fair-skinned Japanese", "Tanned Japanese", "Modern Japanese"],
-            korean: ["Fair-skinned Korean", "Olive-toned Korean", "Modern Korean"]
+            korean: ["Fair-skinned Korean", "Olive-toned Korean", "Modern Korean"],
+            european: ["Nordic European", "Mediterranean European", "Western European", "Eastern European", "Slavic European"]
         };
 
         const BACKGROUND_THEMES = [
@@ -426,7 +455,6 @@
             "the baseball cap is tilted slightly for character",
             "an intense gaze directly into the lens",
             "a slight rugged appearance with minor dirt on the cheek",
-            "blowing a bubble with chewing gum",
             "sunlight catching the edge of the cap brim",
             "looking deeply focused, breathing steadily",
             "uniform slightly unbuttoned at the top collar",
@@ -435,8 +463,22 @@
             "looking off into the distance assessing the play",
             "shadows from the stadium lights falling across the face",
             "adjusting a wristband",
-            "cracking a slight, knowing smile",
-            "wearing tactical eye black under the eyes"
+            "cracking a slight, knowing smile"
+        ];
+
+        const BODY_SHAPES = [
+            "lean and agile",
+            "tall and lanky",
+            "muscular and powerful",
+            "stocky and broad",
+            "athletic and balanced",
+            "compact and sturdy"
+        ];
+
+        const UNIFORM_COLORS = [
+            "electric blue", "crimson red", "forest green", "goldenrod yellow",
+            "deep purple", "neon pink", "teal", "burnt orange", "magenta",
+            "charcoal grey", "powder blue", "midnight navy"
         ];
 
         // --- GLOBAL STATE ---
@@ -448,11 +490,14 @@
             expression: "",
             cameraAngle: "",
             flavor: "",
+            bodyShape: "",
+            uniformColor: "",
             skills: SKILLS.reduce((acc, s) => ({...acc, [s]: {b:2, r:0, k:0}}), {}),
             intangibles: [],
             spray: { pull: 33, center: 34, opp: 33 }
         };
         let currentVizStyle = 'realistic';
+        let currentFraming = 'portrait';
         let generatedLeague = [];
 
         // --- CORE FUNCTIONS ---
@@ -478,10 +523,13 @@
             const expr = EXPRESSIONS[Math.floor(Math.random() * EXPRESSIONS.length)];
             const angle = CAMERA_ANGLES[Math.floor(Math.random() * CAMERA_ANGLES.length)];
             const flav = CHARACTER_FLAVOR[Math.floor(Math.random() * CHARACTER_FLAVOR.length)];
+            const bShape = BODY_SHAPES[Math.floor(Math.random() * BODY_SHAPES.length)];
+            const uColor = UNIFORM_COLORS[Math.floor(Math.random() * UNIFORM_COLORS.length)];
             
             return { 
                 name: `${f} ${l}`, origin: r, gender: gender, physicalSubtype: subtype, 
-                background: bg, expression: expr, cameraAngle: angle, flavor: flav 
+                background: bg, expression: expr, cameraAngle: angle, flavor: flav,
+                bodyShape: bShape, uniformColor: uColor
             };
         }
 
@@ -496,6 +544,8 @@
             builderState.expression = result.expression;
             builderState.cameraAngle = result.cameraAngle;
             builderState.flavor = result.flavor;
+            builderState.bodyShape = result.bodyShape;
+            builderState.uniformColor = result.uniformColor;
             
             document.getElementById('builder-name').value = builderState.name;
             rollSpray();
@@ -673,6 +723,8 @@
                 expression: "",
                 cameraAngle: "",
                 flavor: "",
+                bodyShape: "",
+                uniformColor: "",
                 skills: SKILLS.reduce((acc, s) => ({...acc, [s]: {b:2, r:0, k:0}}), {}),
                 intangibles: [],
                 spray: { pull: 33, center: 34, opp: 33 }
@@ -753,7 +805,9 @@
                     background: res.background,
                     expression: res.expression,
                     cameraAngle: res.cameraAngle,
-                    flavor: res.flavor
+                    flavor: res.flavor,
+                    bodyShape: res.bodyShape,
+                    uniformColor: res.uniformColor
                 });
             }
             renderLeagueTable();
@@ -770,6 +824,8 @@
             generatedLeague[idx].expression = res.expression;
             generatedLeague[idx].cameraAngle = res.cameraAngle;
             generatedLeague[idx].flavor = res.flavor;
+            generatedLeague[idx].bodyShape = res.bodyShape;
+            generatedLeague[idx].uniformColor = res.uniformColor;
             renderLeagueTable();
         }
 
@@ -809,6 +865,8 @@
             builderState.expression = p.expression;
             builderState.cameraAngle = p.cameraAngle;
             builderState.flavor = p.flavor;
+            builderState.bodyShape = p.bodyShape;
+            builderState.uniformColor = p.uniformColor;
             
             document.getElementById('viz-name').value = p.name.replace(' ★', '');
             switchTab('tab-visualizer');
@@ -816,9 +874,9 @@
         }
 
         function getCSVString() {
-            let csv = "Name,Exp,Pos,Intangibles,Salary,Arm,Bat,Glove,Legs,Fatigue,Gender,Subtype,Background\n";
+            let csv = "Name,Exp,Pos,Intangibles,Salary,Arm,Bat,Glove,Legs,Fatigue,Gender,Subtype,Background,BodyShape,UniformColor\n";
             generatedLeague.forEach(p => {
-                csv += `"${p.name}","${p.exp}","${p.pos}","${p.intangibles}","${p.sal}","${p.skills.Arm.b}B${p.skills.Arm.r}R","${p.skills.Bat.b}B${p.skills.Bat.r}R","${p.skills.Glove.b}B${p.skills.Glove.r}R","${p.skills.Legs.b}B${p.skills.Legs.r}R","${p.fatigue}","${p.gender}","${p.physicalSubtype}","${p.background}"\n`;
+                csv += `"${p.name}","${p.exp}","${p.pos}","${p.intangibles}","${p.sal}","${p.skills.Arm.b}B${p.skills.Arm.r}R","${p.skills.Bat.b}B${p.skills.Bat.r}R","${p.skills.Glove.b}B${p.skills.Glove.r}R","${p.skills.Legs.b}B${p.skills.Legs.r}R","${p.fatigue}","${p.gender}","${p.physicalSubtype}","${p.background}","${p.bodyShape}","${p.uniformColor}"\n`;
             });
             return csv;
         }
@@ -830,20 +888,51 @@
         }
 
         // --- VISUALIZER LOGIC ---
+        function setFraming(framing) {
+            currentFraming = framing;
+            const bgViz = document.getElementById('viz-framing-bg');
+            const bgLeague = document.getElementById('league-framing-bg');
+
+            const lPort = document.getElementById('label-framing-portrait');
+            const lFull = document.getElementById('label-framing-fullbody');
+            const llPort = document.getElementById('league-framing-portrait');
+            const llFull = document.getElementById('league-framing-fullbody');
+
+            [lPort, lFull, llPort, llFull].forEach(el => {
+                if(el) { el.classList.remove('text-blue-600'); el.classList.add('text-slate-400'); }
+            });
+
+            if (framing === 'portrait') {
+                if(bgViz) bgViz.style.transform = 'translateX(0)';
+                if(bgLeague) bgLeague.style.transform = 'translateX(0)';
+                if(lPort) { lPort.classList.add('text-blue-600'); lPort.classList.remove('text-slate-400'); }
+                if(llPort) { llPort.classList.add('text-blue-600'); llPort.classList.remove('text-slate-400'); }
+            } else {
+                if(bgViz) bgViz.style.transform = 'translateX(100%)';
+                if(bgLeague) bgLeague.style.transform = 'translateX(100%)';
+                if(lFull) { lFull.classList.add('text-blue-600'); lFull.classList.remove('text-slate-400'); }
+                if(llFull) { llFull.classList.add('text-blue-600'); llFull.classList.remove('text-slate-400'); }
+            }
+        }
+
         function setVizStyle(style) {
             currentVizStyle = style;
             const bg = document.getElementById('viz-toggle-bg');
             const labelR = document.getElementById('label-realistic');
             const labelA = document.getElementById('label-anime');
             const labelS = document.getElementById('label-stylized');
+            const labelAct = document.getElementById('label-action');
+            const labelSMB = document.getElementById('label-smb4');
             
             const bgLeague = document.getElementById('league-toggle-bg');
             const lLabelR = document.getElementById('league-label-realistic');
             const lLabelA = document.getElementById('league-label-anime');
             const lLabelS = document.getElementById('league-label-stylized');
+            const lLabelAct = document.getElementById('league-label-action');
+            const lLabelSMB = document.getElementById('league-label-smb4');
             
             // Remove all active states
-            [labelR, labelA, labelS, lLabelR, lLabelA, lLabelS].forEach(l => {
+            [labelR, labelA, labelS, labelAct, labelSMB, lLabelR, lLabelA, lLabelS, lLabelAct, lLabelSMB].forEach(l => {
                 if(l) {
                     l.classList.remove('text-blue-600');
                     l.classList.add('text-slate-400');
@@ -860,36 +949,73 @@
                 if(bgLeague) bgLeague.style.transform = 'translateX(100%)';
                 if(labelA) { labelA.classList.add('text-blue-600'); labelA.classList.remove('text-slate-400'); }
                 if(lLabelA) { lLabelA.classList.add('text-blue-600'); lLabelA.classList.remove('text-slate-400'); }
-            } else {
+            } else if (style === 'stylized') {
                 if(bg) bg.style.transform = 'translateX(200%)';
                 if(bgLeague) bgLeague.style.transform = 'translateX(200%)';
                 if(labelS) { labelS.classList.add('text-blue-600'); labelS.classList.remove('text-slate-400'); }
                 if(lLabelS) { lLabelS.classList.add('text-blue-600'); lLabelS.classList.remove('text-slate-400'); }
+            } else if (style === 'action') {
+                if(bg) bg.style.transform = 'translateX(300%)';
+                if(bgLeague) bgLeague.style.transform = 'translateX(300%)';
+                if(labelAct) { labelAct.classList.add('text-blue-600'); labelAct.classList.remove('text-slate-400'); }
+                if(lLabelAct) { lLabelAct.classList.add('text-blue-600'); lLabelAct.classList.remove('text-slate-400'); }
+            } else if (style === 'smb4') {
+                if(bg) bg.style.transform = 'translateX(400%)';
+                if(bgLeague) bgLeague.style.transform = 'translateX(400%)';
+                if(labelSMB) { labelSMB.classList.add('text-blue-600'); labelSMB.classList.remove('text-slate-400'); }
+                if(lLabelSMB) { lLabelSMB.classList.add('text-blue-600'); lLabelSMB.classList.remove('text-slate-400'); }
             }
         }
 
         function buildPrompt(playerObj) {
             let styleDesc = "";
-            if (currentVizStyle === 'stylized') {
-                styleDesc = "Masterful oil painting style with visible expressive brushwork and rich textures. Painterly execution with soulful strokes and artistic highlights. Impressionistic background with soft blended colors. The character is wearing a solid hue baseball jersey and blank cap. No text, no logos, no ink outlines. Pure fine art aesthetic.";
-            } else if (currentVizStyle === 'anime') {
-                styleDesc = "Modern high-fidelity realistic anime art style. Detailed cel-shading, vibrant colors, cinematic composition. The character has highly detailed anime features but maintains realistic proportions. Wearing a solid color baseball jersey and blank cap. No text allowed.";
-            } else {
-                styleDesc = "Professional sports photography style. Hyper-realistic photorealistic textures. Rich, vibrant color photography. The player is wearing a richly colored solid-hue uniform with zero branding, zero logos, and absolute zero text.";
+            let cameraAngle = playerObj.cameraAngle || "close-up headshot";
+            let actionContext = "";
+
+            if (currentFraming === 'fullbody' && currentVizStyle !== 'action') {
+                cameraAngle = "full-body wide shot standing proudly, showing the complete character from head to toe including cleats";
             }
-            
+
             const subtype = playerObj.physicalSubtype || "diverse appearance";
             const genderDescriptor = playerObj.gender === 'female' ? "female athlete" : "male athlete";
             const bgTheme = playerObj.background || "blurred professional baseball stadium";
             const expression = playerObj.expression || "determined and focused";
-            const cameraAngle = playerObj.cameraAngle || "close-up headshot";
-            const flavor = playerObj.flavor || "wearing tactical eye black under the eyes";
+            const flavor = playerObj.flavor || "with a clean, crisp, professional appearance";
+            const bodyShape = playerObj.bodyShape || "athletic and balanced";
+            const uniformColor = playerObj.uniformColor || "solid-colored";
+
+            if (currentVizStyle === 'action') {
+                const ACTION_POSES = [
+                    "mid-swing hitting a fastball, bat connecting with the ball",
+                    "diving parallel to the ground to catch a hard line drive with dirt flying",
+                    "in a mid-pitching motion, leg kicked high, throwing a fastball",
+                    "sliding aggressively into a base through a cloud of dust",
+                    "leaping high against the outfield wall to rob a home run",
+                    "charging a ground ball and throwing on the run"
+                ];
+                const pose = ACTION_POSES[Math.floor(Math.random() * ACTION_POSES.length)];
+                cameraAngle = "full-body dynamic wide action shot";
+                actionContext = ` The character is physically ${pose}.`;
+                styleDesc = "High-end AAA 3D action video game rendering engine style. Captured mid-action during a high-stakes professional baseball game with dramatic in-game cinematic camera angles. Highly detailed 3D PBR textures, intense motion, flying dirt particles, and dynamic character models. The character is wearing a highly detailed solid color baseball jersey and blank cap. Absolutely no text, no logos, and no writing.";
+            } else if (currentVizStyle === 'stylized') {
+                styleDesc = "Masterful oil painting style with visible expressive brushwork and rich textures. Painterly execution with soulful strokes and artistic highlights. Impressionistic background with soft blended colors. The character is wearing a solid hue baseball jersey and blank cap. No text, no logos, no ink outlines. Pure fine art aesthetic.";
+            } else if (currentVizStyle === 'anime') {
+                styleDesc = `High-end 3D cel-shaded anime fighting game art style, reminiscent of modern Arc System Works games. Extremely detailed 2.5D cel-shading, striking bold ink-like outer outlines, edgy and vibrant color palettes, and intense dynamic proportions. CRUCIAL: Accurately render the character with a ${subtype} skin tone and ethnic features. The character is wearing a highly stylized, heavily folded solid color baseball jersey and blank cap. Absolutely no text, no logos, and no writing.`;
+            } else if (currentVizStyle === 'smb4') {
+                styleDesc = `3D stylized cartoon video game character render, inspired by modern arcade baseball games. Features a ${bodyShape} physique with stylized proportions, slightly oversized heads, and expressive comical facial features. Rendered with rich 3D PBR materials. CRUCIAL: The character MUST clearly display an accurate ${subtype} skin tone and heritage. Smooth clay-like skin textures, and high-fidelity stylized 3D fabric. Absolutely no text, no logos, and no writing.`;
+            } else {
+                styleDesc = "Professional sports photography style. Hyper-realistic photorealistic textures. Rich, vibrant color photography. The player is wearing a richly colored solid-hue uniform with zero branding, zero logos, and absolute zero text.";
+            }
             
             let lightingInstruction = "The final image MUST be in full natural color with realistic skin tones.";
-            if (currentVizStyle === 'anime') {
-                lightingInstruction = "The final image MUST feature dramatic anime-style cinematic lighting with sharp highlights and soft glows.";
+            if (currentVizStyle === 'action') {
+                lightingInstruction = "The final image MUST feature cinematic AAA game engine lighting with dramatic volumetric rays, high-contrast rim lighting, glowing bloom effects, flying particle effects, and beautiful background motion blur to emphasize the high-speed 3D action aesthetic.";
+            } else if (currentVizStyle === 'anime') {
+                lightingInstruction = "The final image MUST feature intense fighting game lighting with dramatic, high-contrast rim lights, deep angular shadows, and glowing bloom effects to emphasize the 2.5D cel-shaded aesthetic.";
             } else if (currentVizStyle === 'stylized') {
                 lightingInstruction = "The final image MUST feature warm, dramatic lighting with deep shadows and vibrant impasto highlights.";
+            } else if (currentVizStyle === 'smb4') {
+                lightingInstruction = "The final image MUST feature bright, colorful, high-contrast 3D rendering engine lighting, with vibrant rim lights and saturated environment colors appropriate for a lively video game.";
             } else if (bgTheme.includes("sunset")) {
                 lightingInstruction += " Use warm golden hour lighting on the subject's face.";
             } else if (bgTheme.includes("sunny afternoon")) {
@@ -898,7 +1024,11 @@
                 lightingInstruction += " Use strong artificial floodlight illumination with cool rim lighting.";
             }
 
-            return `Professional ${cameraAngle} portrait of a ${genderDescriptor} with ${subtype} physical appearance and ${expression}. The athlete is ${flavor}. Wearing a clean, solid-colored baseball cap and a plain, solid-colored athletic button-down shirt. The baseball cap MUST be completely blank, with a smooth, unadorned fabric surface on the front; it has NO embroidery, NO letters, NO graphics, and NO logos. The button-down shirt is a plain solid color with NO branding, NO text, and NO insignia. Background is a ${bgTheme}. ${styleDesc}. ${lightingInstruction} Zero words or letters allowed anywhere in the image. Sharp focus on eyes.`;
+            const focusInstruction = (currentFraming === 'fullbody' || currentVizStyle === 'action') 
+                ? "Sharp overall focus, full body completely visible in frame." 
+                : "Sharp focus on eyes.";
+
+            return `Professional ${cameraAngle} portrait of a ${subtype} ${genderDescriptor} with distinct ${subtype} physical appearance and ${expression}. The athlete is ${flavor}.${actionContext} Wearing a clean, ${uniformColor} baseball cap and a plain, ${uniformColor} athletic button-down shirt. The baseball cap MUST be completely blank, with a smooth, unadorned fabric surface on the front; it has NO embroidery, NO letters, NO graphics, and NO logos. The button-down shirt is a plain solid color with NO branding, NO text, and NO insignia. Background is a ${bgTheme}. ${styleDesc} ${lightingInstruction} Zero words or letters allowed anywhere in the image. ${focusInstruction}`;
         }
 
         async function renderPortrait() {
@@ -912,6 +1042,8 @@
             const expression = builderState.expression || EXPRESSIONS[Math.floor(Math.random() * EXPRESSIONS.length)];
             const cameraAngle = builderState.cameraAngle || CAMERA_ANGLES[Math.floor(Math.random() * CAMERA_ANGLES.length)];
             const flavor = builderState.flavor || CHARACTER_FLAVOR[Math.floor(Math.random() * CHARACTER_FLAVOR.length)];
+            const bodyShape = builderState.bodyShape || BODY_SHAPES[Math.floor(Math.random() * BODY_SHAPES.length)];
+            const uniformColor = builderState.uniformColor || UNIFORM_COLORS[Math.floor(Math.random() * UNIFORM_COLORS.length)];
             
             const prompt = buildPrompt({
                 gender: builderState.gender,
@@ -919,7 +1051,9 @@
                 background: bgTheme,
                 expression: expression,
                 cameraAngle: cameraAngle,
-                flavor: flavor
+                flavor: flavor,
+                bodyShape: bodyShape,
+                uniformColor: uniformColor
             });
 
             try {
@@ -970,8 +1104,8 @@
                         const safeName = p.name.replace(' ★', '').replace(/[^a-z0-9]/gi, '_').toLowerCase();
                         portraitsFolder.file(`${safeName}_portrait.png`, base64Data, {base64: true});
                     }
-                    // Wait 1.2s to respect API rate limits
-                    await new Promise(r => setTimeout(r, 1200));
+                    // Wait 4s to strictly respect API rate limits
+                    await new Promise(r => setTimeout(r, 4000));
                 } catch (e) {
                     console.error(`Failed to generate portrait for ${p.name}`, e);
                 }
@@ -1003,16 +1137,28 @@
 
         async function callImagen(promptText) {
             const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
-            const payload = { instances: [{ prompt: promptText }], parameters: { sampleCount: 1 } };
+            // Correct format: instances is an object containing the prompt, not an array
+            const payload = { instances: { prompt: promptText }, parameters: { sampleCount: 1 } };
             let retries = 0;
             const maxRetries = 5;
             const backoff = [1000, 2000, 4000, 8000, 16000];
             while (retries <= maxRetries) {
                 try {
-                    const res = await fetch(url, { method: 'POST', body: JSON.stringify(payload) });
-                    if (!res.ok) throw new Error("API Failure");
+                    const res = await fetch(url, { 
+                        method: 'POST', 
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(payload) 
+                    });
+                    if (!res.ok) {
+                        const errorText = await res.text();
+                        throw new Error(`API Failure: ${res.status} - ${errorText}`);
+                    }
                     const result = await res.json();
-                    if (result.predictions?.[0]?.bytesBase64Encoded) return `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
+                    if (result.predictions?.[0]?.bytesBase64Encoded) {
+                        return `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
+                    }
                     return null;
                 } catch (e) {
                     if (retries === maxRetries) throw e;
@@ -1026,6 +1172,7 @@
         randomizeBuilderName();
         updateBuilderUI();
         renderSprayChart();
+        setFraming('portrait');
         setVizStyle('realistic');
     </script>
 </body>

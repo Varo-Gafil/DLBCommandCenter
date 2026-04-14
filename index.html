@@ -305,7 +305,7 @@
         <section id="tab-visualizer" class="tab-content hidden animate-in fade-in duration-300">
             <div class="max-w-4xl mx-auto">
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 mb-8">
-                    <div class="flex flex-col lg:flex-row gap-6 mb-8">
+                    <div class="flex flex-col lg:flex-row gap-6 mb-6">
                         <div class="flex-1">
                             <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Subject Name</label>
                             <input type="text" id="viz-name" class="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl font-black italic uppercase text-lg outline-none focus:border-blue-500">
@@ -330,6 +330,47 @@
                                 <button onclick="setVizStyle('action')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="label-action">Action</button>
                                 <button onclick="setVizStyle('smb4')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="label-smb4">SMB4</button>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Visual DNA Dropdowns -->
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Gender</label>
+                            <select id="viz-gender" onchange="updateVizState()" class="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl font-bold text-sm outline-none focus:border-blue-500 transition-all">
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Heritage (Subtype)</label>
+                            <select id="viz-subtype" onchange="updateVizState()" class="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl font-bold text-sm outline-none focus:border-blue-500 transition-all">
+                                <option value="">Auto (Random)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Hair Style</label>
+                            <select id="viz-hairstyle" onchange="updateVizState()" class="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl font-bold text-sm outline-none focus:border-blue-500 transition-all">
+                                <option value="">Auto (Random)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Background</label>
+                            <select id="viz-bg" onchange="updateVizState()" class="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl font-bold text-sm outline-none focus:border-blue-500 transition-all">
+                                <option value="">Auto (Random)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Body Shape</label>
+                            <select id="viz-bodyshape" onchange="updateVizState()" class="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl font-bold text-sm outline-none focus:border-blue-500 transition-all">
+                                <option value="">Auto (Random)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Uniform Color</label>
+                            <select id="viz-uniform" onchange="updateVizState()" class="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl font-bold text-sm outline-none focus:border-blue-500 transition-all">
+                                <option value="">Auto (Random)</option>
+                            </select>
                         </div>
                     </div>
                     
@@ -415,9 +456,9 @@
 
         const NAME_LIB = {
             american: { 
-                m: ["Tyler", "Cody", "Jackson", "Wyatt", "Garrett", "Blake", "Chase", "Hunter", "Austin", "Logan", "Travis", "Cooper", "Mason", "Grant", "Spencer", "Colton", "Ethan", "Noah", "Liam", "Jacob", "William", "Benjamin", "James", "Lucas", "Michael", "Alexander", "Daniel", "Elijah", "Aiden", "Matthew", "David", "Joseph", "Samuel", "Sebastian", "Jack", "Luke"],
-                f: ["Emily", "Madison", "Sophia", "Isabella", "Olivia", "Ava", "Emma", "Abigail", "Mia", "Chloe", "Lily", "Grace", "Zoe", "Riley", "Harper", "Avery", "Addison", "Elizabeth", "Ella", "Natalie", "Samantha", "Alexis", "Hailey", "Alyssa", "Hannah", "Ashley", "Brianna", "Brooklyn", "Charlotte", "Evelyn", "Layla", "Lillian", "Nora", "Scarlett", "Stella", "Victoria"], 
-                l: ["Thompson", "Miller", "Davis", "Wilson", "Moore", "Taylor", "Anderson", "Thomas", "Jackson", "White", "Harris", "Martin", "Clark", "Lewis", "Walker", "Smith", "Johnson", "Williams", "Brown", "Jones", "Young", "Allen", "King", "Wright", "Scott", "Green", "Baker", "Adams", "Nelson", "Hill", "Ramirez", "Campbell", "Mitchell", "Roberts", "Carter", "Phillips"] 
+                m: ["Tyler", "Cody", "Jackson", "Wyatt", "Garrett", "Blake", "Chase", "Hunter", "Austin", "Logan", "Travis", "Cooper", "Mason", "Grant", "Spencer", "Colton", "Ethan", "Noah", "Liam", "Jacob", "William", "Benjamin", "James", "Lucas", "Michael", "Alexander", "Daniel", "Elijah", "Aiden", "Matthew", "David", "Joseph", "Samuel", "Sebastian", "Jack", "Luke", "Scooter", "Biff", "Skeeter", "Dash", "Rip", "Boomer", "Chili", "Flash", "Spike", "Duke", "Buster", "Bubba", "Rusty", "Dusty", "Chip", "Rocco", "Slim"],
+                f: ["Emily", "Madison", "Sophia", "Isabella", "Olivia", "Ava", "Emma", "Abigail", "Mia", "Chloe", "Lily", "Grace", "Zoe", "Riley", "Harper", "Avery", "Addison", "Elizabeth", "Ella", "Natalie", "Samantha", "Alexis", "Hailey", "Alyssa", "Hannah", "Ashley", "Brianna", "Brooklyn", "Charlotte", "Evelyn", "Layla", "Lillian", "Nora", "Scarlett", "Stella", "Victoria", "Trixie", "Roxy", "Sparky", "Pepper", "Sunny", "Babs", "Dixie", "Peaches", "Moxie", "Dottie"], 
+                l: ["Thompson", "Miller", "Davis", "Wilson", "Moore", "Taylor", "Anderson", "Thomas", "Jackson", "White", "Harris", "Martin", "Clark", "Lewis", "Walker", "Smith", "Johnson", "Williams", "Brown", "Jones", "Young", "Allen", "King", "Wright", "Scott", "Green", "Baker", "Adams", "Nelson", "Hill", "Ramirez", "Campbell", "Mitchell", "Roberts", "Carter", "Phillips", "McSmash", "Tater", "Dingers", "Longball", "Speedman", "Grit", "Steele", "Powers", "Cannon", "Thunder", "Crash", "Mash", "Walloper", "Slaps", "Rocket"] 
             },
             latin: { 
                 m: ["Javier", "Carlos", "Manuel", "Mateo", "Diego", "Alejandro", "Luis", "Miguel", "Santiago", "Enrique", "Rafael", "Jorge", "Andres", "Fernando", "Ricardo", "Sebastian", "Benjamin", "Felipe", "Nicolas", "Samuel", "Joaquin", "Tomas", "Bautista", "Juan", "Agustin", "Francisco", "Maximiliano", "Gabriel", "Lucas", "Leonardo", "Emiliano", "Ignacio", "Matías", "Cristian", "Eduardo", "Oscar"],
@@ -467,7 +508,6 @@
             "mid-celebration shout",
             "thoughtful, analyzing the field",
             "a relaxed, approachable smile",
-            "wiping sweat with a weary but victorious look",
             "a quiet, steely gaze",
             "eyes narrowed slightly against the sun",
             "a slight grimace of extreme effort"
@@ -487,7 +527,6 @@
         ];
 
         const CHARACTER_FLAVOR = [
-            "with beads of sweat on the forehead from competition",
             "the baseball cap is tilted slightly for character",
             "an intense gaze directly into the lens",
             "a slight rugged appearance with minor dirt on the cheek",
@@ -508,7 +547,6 @@
             "muscular and powerful",
             "stocky and broad",
             "athletic and balanced",
-            "compact and sturdy"
         ];
 
         const UNIFORM_COLORS = [
@@ -530,7 +568,7 @@
             "wearing a rugged digital sports watch", 
             "wearing a large chronograph watch", 
             "wearing a sleek fitness tracker band", 
-            "wearing a thick leather wrist cuff"
+            "wearing athletic terrycloth sweatbands"
         ];
 
         const TATTOOS = [
@@ -539,6 +577,32 @@
             "featuring a detailed sleeve tattoo on their left arm",
             "with a small script tattoo on their inner bicep",
             "showing tattoos on their calf muscle"
+        ];
+
+        const EQUIPMENT = [
+            "",
+            "casually resting a wooden baseball bat on their shoulder",
+            "holding a baseball tightly in one completely bare hand",
+            "wearing a classic leather fielder's baseball glove on one hand with the other throwing hand completely bare",
+            "wearing tight fitting full-fingered professional batting gloves on both hands",
+            "tossing a baseball lightly in the air with a bare hand",
+            "leaning on a wooden baseball bat",
+            "punching the pocket of their leather fielder's glove with a completely bare throwing hand",
+            "gripping a baseball bat with both hands while wearing full-fingered batting gloves",
+            "holding a baseball with a visible pitching grip in a completely bare hand",
+            "adjusting the velcro on their premium full-fingered batting gloves"
+        ];
+
+        const MALE_HAIR = [
+            "short buzz cut", "fade with a hard part", "messy textured fringe",
+            "slicked back mullet", "medium length baseball flow", "braided cornrows",
+            "short dreadlocks", "shaved bald head", "classic short taper"
+        ];
+
+        const FEMALE_HAIR = [
+            "long high ponytail", "messy bun pulled through the cap", "shoulder-length layered hair",
+            "tight athletic french braids", "short pixie cut", "long straight hair",
+            "wavy hair flowing past the shoulders", "curly hair gathered at the neck"
         ];
 
         // --- NEW: FRANCHISE TEAMS DATA & RANDOMIZERS ---
@@ -570,7 +634,7 @@
             { name: 'Flying Squirrels', mascot: 'flying squirrel gliding with a baseball' },
             { name: 'Chihuahuas', mascot: 'fierce little dog barking at a baseball' },
             { name: 'RubberDucks', mascot: 'giant yellow rubber duck with a baseball cap' },
-            { name: 'Prawns', mascot: 'muscular shrimp swinging a bat' },
+            { name: 'Jumbo Shrimp', mascot: 'muscular shrimp swinging a bat' },
             { name: 'Mud Hens', mascot: 'grumpy swamp bird covered in mud holding a bat' },
             { name: 'Isotopes', mascot: 'glowing atomic superhero swinging a bat' },
             { name: 'Aviators', mascot: 'vintage pilot wearing goggles with a bat' },
@@ -620,8 +684,7 @@
             { name: 'Timber Rattlers', mascot: 'rattlesnake coiled around a wooden baseball bat' },
             { name: 'Bulls', mascot: 'snorting bull with a ring in its nose ready to hit' },
             { name: 'Renegades', mascot: 'masked outlaw riding a horse with a baseball bat' },
-            { name: 'Zephyrs', mascot: 'mythological wind god blowing a baseball over the fence' },
-            { name: 'Wave', mascot: 'a large tidal wave looming over a baseball diamond' }
+            { name: 'Zephyrs', mascot: 'mythological wind god blowing a baseball over the fence' }
         ];
 
         const TEAM_COLORS = [
@@ -658,6 +721,8 @@
             eyewear: "",
             wristwear: "",
             tattoos: "",
+            equipment: "",
+            hairStyle: "",
             skills: SKILLS.reduce((acc, s) => ({...acc, [s]: {b:2, r:0, k:0}}), {}),
             intangibles: [],
             spray: { pull: 33, center: 34, opp: 33 }
@@ -686,8 +751,33 @@
             const r = regions[Math.floor(Math.random() * regions.length)];
             const gender = Math.random() < 0.5 ? 'male' : 'female';
             const fList = gender === 'male' ? NAME_LIB[r].m : NAME_LIB[r].f;
-            const f = fList[Math.floor(Math.random() * fList.length)];
-            const l = NAME_LIB[r].l[Math.floor(Math.random() * NAME_LIB[r].l.length)];
+            const lList = NAME_LIB[r].l;
+
+            let f, l;
+            
+            // 15% Chance for Alliteration
+            if (Math.random() < 0.15) {
+                let attempts = 0;
+                let success = false;
+                while (attempts < 50 && !success) {
+                    f = fList[Math.floor(Math.random() * fList.length)];
+                    const firstLetter = f.charAt(0).toLowerCase();
+                    const matchingLastNames = lList.filter(name => name.charAt(0).toLowerCase() === firstLetter);
+                    if (matchingLastNames.length > 0) {
+                        l = matchingLastNames[Math.floor(Math.random() * matchingLastNames.length)];
+                        success = true;
+                    }
+                    attempts++;
+                }
+                if (!success) { // Fallback if alliteration can't be matched
+                    f = fList[Math.floor(Math.random() * fList.length)];
+                    l = lList[Math.floor(Math.random() * lList.length)];
+                }
+            } else {
+                f = fList[Math.floor(Math.random() * fList.length)];
+                l = lList[Math.floor(Math.random() * lList.length)];
+            }
+
             const subtypes = SUBTYPES[r];
             const subtype = subtypes[Math.floor(Math.random() * subtypes.length)];
             const bg = BACKGROUND_THEMES[Math.floor(Math.random() * BACKGROUND_THEMES.length)];
@@ -698,15 +788,23 @@
             const uColor = UNIFORM_COLORS[Math.floor(Math.random() * UNIFORM_COLORS.length)];
 
             // Randomize accessories with weighted probabilities
-            const eye = Math.random() < 0.4 ? EYEWEAR[Math.floor(Math.random() * (EYEWEAR.length - 1) + 1)] : "";
+            const eye = Math.random() < 0.15 ? EYEWEAR[Math.floor(Math.random() * (EYEWEAR.length - 1) + 1)] : "";
             const wrist = Math.random() < 0.5 ? WRISTWEAR[Math.floor(Math.random() * (WRISTWEAR.length - 1) + 1)] : "";
             const tat = Math.random() < 0.25 ? TATTOOS[Math.floor(Math.random() * (TATTOOS.length - 1) + 1)] : "";
+            const equip = Math.random() < 0.85 ? EQUIPMENT[Math.floor(Math.random() * (EQUIPMENT.length - 1) + 1)] : "";
             
+            let hair = "";
+            if (gender === 'male') {
+                hair = MALE_HAIR[Math.floor(Math.random() * MALE_HAIR.length)];
+            } else {
+                hair = FEMALE_HAIR[Math.floor(Math.random() * FEMALE_HAIR.length)];
+            }
+
             return { 
                 name: `${f} ${l}`, origin: r, gender: gender, physicalSubtype: subtype, 
                 background: bg, expression: expr, cameraAngle: angle, flavor: flav,
                 bodyShape: bShape, uniformColor: uColor,
-                eyewear: eye, wristwear: wrist, tattoos: tat
+                eyewear: eye, wristwear: wrist, tattoos: tat, equipment: equip, hairStyle: hair
             };
         }
 
@@ -726,6 +824,8 @@
             builderState.eyewear = result.eyewear;
             builderState.wristwear = result.wristwear;
             builderState.tattoos = result.tattoos;
+            builderState.equipment = result.equipment;
+            builderState.hairStyle = result.hairStyle;
             
             document.getElementById('builder-name').value = builderState.name;
             rollSpray();
@@ -908,6 +1008,8 @@
                 eyewear: "",
                 wristwear: "",
                 tattoos: "",
+                equipment: "",
+                hairStyle: "",
                 skills: SKILLS.reduce((acc, s) => ({...acc, [s]: {b:2, r:0, k:0}}), {}),
                 intangibles: [],
                 spray: { pull: 33, center: 34, opp: 33 }
@@ -924,6 +1026,7 @@
         function sendToVisualizer() {
             if (!builderState.name) randomizeBuilderName();
             document.getElementById('viz-name').value = builderState.name;
+            syncVizDropdowns();
             switchTab('tab-visualizer');
             renderPortrait();
         }
@@ -993,7 +1096,9 @@
                     uniformColor: res.uniformColor,
                     eyewear: res.eyewear,
                     wristwear: res.wristwear,
-                    tattoos: res.tattoos
+                    tattoos: res.tattoos,
+                    equipment: res.equipment,
+                    hairStyle: res.hairStyle
                 });
             }
             renderLeagueTable();
@@ -1015,6 +1120,8 @@
             generatedLeague[idx].eyewear = res.eyewear;
             generatedLeague[idx].wristwear = res.wristwear;
             generatedLeague[idx].tattoos = res.tattoos;
+            generatedLeague[idx].equipment = res.equipment;
+            generatedLeague[idx].hairStyle = res.hairStyle;
             renderLeagueTable();
         }
 
@@ -1059,16 +1166,19 @@
             builderState.eyewear = p.eyewear;
             builderState.wristwear = p.wristwear;
             builderState.tattoos = p.tattoos;
+            builderState.equipment = p.equipment;
+            builderState.hairStyle = p.hairStyle;
             
             document.getElementById('viz-name').value = p.name.replace(' ★', '');
+            syncVizDropdowns();
             switchTab('tab-visualizer');
             renderPortrait();
         }
 
         function getCSVString() {
-            let csv = "Name,Exp,Pos,Intangibles,Salary,Arm,Bat,Glove,Legs,Fatigue,Gender,Subtype,Background,BodyShape,UniformColor\n";
+            let csv = "Name,Exp,Pos,Intangibles,Salary,Arm,Bat,Glove,Legs,Fatigue,Gender,Subtype,Background,BodyShape,UniformColor,HairStyle\n";
             generatedLeague.forEach(p => {
-                csv += `"${p.name}","${p.exp}","${p.pos}","${p.intangibles}","${p.sal}","${p.skills.Arm.b}B${p.skills.Arm.r}R","${p.skills.Bat.b}B${p.skills.Bat.r}R","${p.skills.Glove.b}B${p.skills.Glove.r}R","${p.skills.Legs.b}B${p.skills.Legs.r}R","${p.fatigue}","${p.gender}","${p.physicalSubtype}","${p.background}","${p.bodyShape}","${p.uniformColor}"\n`;
+                csv += `"${p.name}","${p.exp}","${p.pos}","${p.intangibles}","${p.sal}","${p.skills.Arm.b}B${p.skills.Arm.r}R","${p.skills.Bat.b}B${p.skills.Bat.r}R","${p.skills.Glove.b}B${p.skills.Glove.r}R","${p.skills.Legs.b}B${p.skills.Legs.r}R","${p.fatigue}","${p.gender}","${p.physicalSubtype}","${p.background}","${p.bodyShape}","${p.uniformColor}","${p.hairStyle}"\n`;
             });
             return csv;
         }
@@ -1080,6 +1190,75 @@
         }
 
         // --- VISUALIZER LOGIC ---
+        function initVisualizerDropdowns() {
+            const subtypeSelect = document.getElementById('viz-subtype');
+            Object.keys(SUBTYPES).forEach(region => {
+                const group = document.createElement('optgroup');
+                group.label = region.toUpperCase();
+                SUBTYPES[region].forEach(st => {
+                    group.innerHTML += `<option value="${st}">${st}</option>`;
+                });
+                subtypeSelect.appendChild(group);
+            });
+
+            const hairSelect = document.getElementById('viz-hairstyle');
+            const maleGroup = document.createElement('optgroup');
+            maleGroup.label = "MALE STYLES";
+            MALE_HAIR.forEach(h => {
+                maleGroup.innerHTML += `<option value="${h}">${h.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}</option>`;
+            });
+            hairSelect.appendChild(maleGroup);
+            
+            const femaleGroup = document.createElement('optgroup');
+            femaleGroup.label = "FEMALE STYLES";
+            FEMALE_HAIR.forEach(h => {
+                femaleGroup.innerHTML += `<option value="${h}">${h.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}</option>`;
+            });
+            hairSelect.appendChild(femaleGroup);
+
+            const bgSelect = document.getElementById('viz-bg');
+            BACKGROUND_THEMES.forEach(bg => {
+                let label = "Custom";
+                if(bg.includes("sunny afternoon")) label = "Sunny Stadium";
+                else if(bg.includes("golden hour")) label = "Sunset Stadium";
+                else if(bg.includes("night game")) label = "Night Game";
+                else if(bg.includes("indoor professional")) label = "Indoor Facility";
+                else if(bg.includes("dugout")) label = "Dugout";
+                else if(bg.includes("bullpen")) label = "Bullpen";
+                else if(bg.includes("urban community")) label = "Urban Field";
+                bgSelect.innerHTML += `<option value="${bg}">${label}</option>`;
+            });
+
+            const shapeSelect = document.getElementById('viz-bodyshape');
+            BODY_SHAPES.forEach(sh => {
+                shapeSelect.innerHTML += `<option value="${sh}">${sh.charAt(0).toUpperCase() + sh.slice(1)}</option>`;
+            });
+
+            const uniformSelect = document.getElementById('viz-uniform');
+            UNIFORM_COLORS.forEach(c => {
+                const label = c.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+                uniformSelect.innerHTML += `<option value="${c}">${label}</option>`;
+            });
+        }
+
+        function updateVizState() {
+            builderState.gender = document.getElementById('viz-gender').value;
+            builderState.physicalSubtype = document.getElementById('viz-subtype').value;
+            builderState.hairStyle = document.getElementById('viz-hairstyle').value;
+            builderState.background = document.getElementById('viz-bg').value;
+            builderState.bodyShape = document.getElementById('viz-bodyshape').value;
+            builderState.uniformColor = document.getElementById('viz-uniform').value;
+        }
+
+        function syncVizDropdowns() {
+            document.getElementById('viz-gender').value = builderState.gender || "male";
+            document.getElementById('viz-subtype').value = builderState.physicalSubtype || "";
+            document.getElementById('viz-hairstyle').value = builderState.hairStyle || "";
+            document.getElementById('viz-bg').value = builderState.background || "";
+            document.getElementById('viz-bodyshape').value = builderState.bodyShape || "";
+            document.getElementById('viz-uniform').value = builderState.uniformColor || "";
+        }
+
         function setFraming(framing) {
             currentFraming = framing;
             const bgViz = document.getElementById('viz-framing-bg');
@@ -1170,6 +1349,7 @@
 
             const subtype = playerObj.physicalSubtype || "diverse appearance";
             const genderDescriptor = playerObj.gender === 'female' ? "female athlete" : "male athlete";
+            const hairDescriptor = playerObj.hairStyle ? ` featuring a ${playerObj.hairStyle}` : "";
             const bgTheme = playerObj.background || "blurred professional baseball stadium";
             const expression = playerObj.expression || "determined and focused";
             const flavor = playerObj.flavor || "with a clean, crisp, professional appearance";
@@ -1180,6 +1360,7 @@
             const eyewear = playerObj.eyewear ? `, ${playerObj.eyewear}` : "";
             const wristwear = playerObj.wristwear ? `, ${playerObj.wristwear}` : "";
             let tattoos = playerObj.tattoos ? `, ${playerObj.tattoos}` : "";
+            let equipment = playerObj.equipment ? `. The athlete is ${playerObj.equipment}` : "";
 
             // Adjust tattoo description based on framing/style for realism
             if (playerObj.tattoos && playerObj.tattoos.includes("calf")) {
@@ -1190,13 +1371,14 @@
             }
 
             if (currentVizStyle === 'action') {
+                equipment = ""; // Let action pose dictate the equipment
                 const ACTION_POSES = [
                     "mid-swing hitting a fastball, bat connecting with the ball",
-                    "diving parallel to the ground to catch a hard line drive with dirt flying",
-                    "in a mid-pitching motion, leg kicked high, throwing a fastball",
+                    "diving parallel to the ground to catch a hard line drive with dirt flying, throwing hand is completely bare",
+                    "in a mid-pitching motion, leg kicked high, throwing a fastball with a completely bare hand",
                     "sliding aggressively into a base through a cloud of dust",
-                    "leaping high against the outfield wall to rob a home run",
-                    "charging a ground ball and throwing on the run"
+                    "leaping high against the outfield wall to rob a home run, throwing hand is completely bare",
+                    "charging a ground ball and throwing on the run with a completely bare throwing hand"
                 ];
                 const pose = ACTION_POSES[Math.floor(Math.random() * ACTION_POSES.length)];
                 cameraAngle = "full-body dynamic wide action shot";
@@ -1233,7 +1415,7 @@
                 ? "Sharp overall focus, full body completely visible in frame." 
                 : "Sharp focus on eyes.";
 
-            return `Professional ${cameraAngle} portrait of a ${subtype} ${genderDescriptor} with distinct ${subtype} physical appearance and ${expression}. The athlete is ${flavor}${eyewear}${wristwear}${tattoos}.${actionContext} Wearing a clean, ${uniformColor} baseball cap and a plain, ${uniformColor} athletic button-down shirt. The baseball cap MUST be completely blank, with a smooth, unadorned fabric surface on the front; it has NO embroidery, NO letters, NO graphics, and NO logos. The button-down shirt is a plain solid color with NO branding, NO text, and NO insignia. Background is a ${bgTheme}. ${styleDesc} ${lightingInstruction} Zero words or letters allowed anywhere in the image. ${focusInstruction}`;
+            return `Professional ${cameraAngle} portrait of a ${subtype} ${genderDescriptor}${hairDescriptor} with distinct ${subtype} physical appearance and ${expression}. The athlete is ${flavor}${eyewear}${wristwear}${tattoos}${equipment}.${actionContext} Wearing a clean, ${uniformColor} baseball cap and a plain, ${uniformColor} athletic button-down shirt. The baseball cap MUST be completely blank, with a smooth, unadorned fabric surface on the front; it has NO embroidery, NO letters, NO graphics, and NO logos. The button-down shirt is a plain solid color with NO branding, NO text, and NO insignia. Background is a ${bgTheme}. ${styleDesc} ${lightingInstruction} Zero words or letters allowed anywhere in the image. NO buckles, NO heavy leather straps, NO belts on arms, NO fingerless gloves, NO batting glove on throwing hand. ${focusInstruction}`;
         }
 
         async function renderPortrait() {
@@ -1253,6 +1435,7 @@
             const prompt = buildPrompt({
                 gender: builderState.gender,
                 physicalSubtype: builderState.physicalSubtype,
+                hairStyle: builderState.hairStyle,
                 background: bgTheme,
                 expression: expression,
                 cameraAngle: cameraAngle,
@@ -1261,7 +1444,8 @@
                 uniformColor: uniformColor,
                 eyewear: builderState.eyewear,
                 wristwear: builderState.wristwear,
-                tattoos: builderState.tattoos
+                tattoos: builderState.tattoos,
+                equipment: builderState.equipment
             });
 
             try {
@@ -1558,6 +1742,8 @@
         renderSprayChart();
         setFraming('portrait');
         setVizStyle('realistic');
+        initVisualizerDropdowns();
+        syncVizDropdowns();
         renderTeamsTab();
     </script>
 </body>

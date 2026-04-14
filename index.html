@@ -481,6 +481,30 @@
             "charcoal grey", "powder blue", "midnight navy"
         ];
 
+        const EYEWEAR = [
+            "", 
+            "sporting oakley-style sunglasses perched on their hat brim", 
+            "wearing athletic prescription glasses with durable frames", 
+            "wearing classic aviator sunglasses", 
+            "wearing modern reflective performance sunglasses"
+        ];
+
+        const WRISTWEAR = [
+            "", 
+            "wearing a rugged digital sports watch", 
+            "wearing a large chronograph watch", 
+            "wearing a sleek fitness tracker band", 
+            "wearing a thick leather wrist cuff"
+        ];
+
+        const TATTOOS = [
+            "",
+            "with some tribal tattoos visible on their forearm",
+            "featuring a detailed sleeve tattoo on their left arm",
+            "with a small script tattoo on their inner bicep",
+            "showing tattoos on their calf muscle"
+        ];
+
         // --- GLOBAL STATE ---
         let builderState = {
             name: "", exp: "Rookie", isStar: false,
@@ -492,6 +516,9 @@
             flavor: "",
             bodyShape: "",
             uniformColor: "",
+            eyewear: "",
+            wristwear: "",
+            tattoos: "",
             skills: SKILLS.reduce((acc, s) => ({...acc, [s]: {b:2, r:0, k:0}}), {}),
             intangibles: [],
             spray: { pull: 33, center: 34, opp: 33 }
@@ -525,11 +552,17 @@
             const flav = CHARACTER_FLAVOR[Math.floor(Math.random() * CHARACTER_FLAVOR.length)];
             const bShape = BODY_SHAPES[Math.floor(Math.random() * BODY_SHAPES.length)];
             const uColor = UNIFORM_COLORS[Math.floor(Math.random() * UNIFORM_COLORS.length)];
+
+            // Randomize accessories with weighted probabilities
+            const eye = Math.random() < 0.4 ? EYEWEAR[Math.floor(Math.random() * (EYEWEAR.length - 1) + 1)] : "";
+            const wrist = Math.random() < 0.5 ? WRISTWEAR[Math.floor(Math.random() * (WRISTWEAR.length - 1) + 1)] : "";
+            const tat = Math.random() < 0.25 ? TATTOOS[Math.floor(Math.random() * (TATTOOS.length - 1) + 1)] : "";
             
             return { 
                 name: `${f} ${l}`, origin: r, gender: gender, physicalSubtype: subtype, 
                 background: bg, expression: expr, cameraAngle: angle, flavor: flav,
-                bodyShape: bShape, uniformColor: uColor
+                bodyShape: bShape, uniformColor: uColor,
+                eyewear: eye, wristwear: wrist, tattoos: tat
             };
         }
 
@@ -546,6 +579,9 @@
             builderState.flavor = result.flavor;
             builderState.bodyShape = result.bodyShape;
             builderState.uniformColor = result.uniformColor;
+            builderState.eyewear = result.eyewear;
+            builderState.wristwear = result.wristwear;
+            builderState.tattoos = result.tattoos;
             
             document.getElementById('builder-name').value = builderState.name;
             rollSpray();
@@ -725,6 +761,9 @@
                 flavor: "",
                 bodyShape: "",
                 uniformColor: "",
+                eyewear: "",
+                wristwear: "",
+                tattoos: "",
                 skills: SKILLS.reduce((acc, s) => ({...acc, [s]: {b:2, r:0, k:0}}), {}),
                 intangibles: [],
                 spray: { pull: 33, center: 34, opp: 33 }
@@ -807,7 +846,10 @@
                     cameraAngle: res.cameraAngle,
                     flavor: res.flavor,
                     bodyShape: res.bodyShape,
-                    uniformColor: res.uniformColor
+                    uniformColor: res.uniformColor,
+                    eyewear: res.eyewear,
+                    wristwear: res.wristwear,
+                    tattoos: res.tattoos
                 });
             }
             renderLeagueTable();
@@ -826,6 +868,9 @@
             generatedLeague[idx].flavor = res.flavor;
             generatedLeague[idx].bodyShape = res.bodyShape;
             generatedLeague[idx].uniformColor = res.uniformColor;
+            generatedLeague[idx].eyewear = res.eyewear;
+            generatedLeague[idx].wristwear = res.wristwear;
+            generatedLeague[idx].tattoos = res.tattoos;
             renderLeagueTable();
         }
 
@@ -867,6 +912,9 @@
             builderState.flavor = p.flavor;
             builderState.bodyShape = p.bodyShape;
             builderState.uniformColor = p.uniformColor;
+            builderState.eyewear = p.eyewear;
+            builderState.wristwear = p.wristwear;
+            builderState.tattoos = p.tattoos;
             
             document.getElementById('viz-name').value = p.name.replace(' ★', '');
             switchTab('tab-visualizer');
@@ -984,6 +1032,19 @@
             const bodyShape = playerObj.bodyShape || "athletic and balanced";
             const uniformColor = playerObj.uniformColor || "solid-colored";
 
+            // Accessories & Tattoos
+            const eyewear = playerObj.eyewear ? `, ${playerObj.eyewear}` : "";
+            const wristwear = playerObj.wristwear ? `, ${playerObj.wristwear}` : "";
+            let tattoos = playerObj.tattoos ? `, ${playerObj.tattoos}` : "";
+
+            // Adjust tattoo description based on framing/style for realism
+            if (playerObj.tattoos && playerObj.tattoos.includes("calf")) {
+                if (currentFraming !== 'fullbody' && currentVizStyle !== 'action') {
+                    // If not a full body shot, calf tattoos are unlikely to be visible
+                    tattoos = ""; 
+                }
+            }
+
             if (currentVizStyle === 'action') {
                 const ACTION_POSES = [
                     "mid-swing hitting a fastball, bat connecting with the ball",
@@ -1028,7 +1089,7 @@
                 ? "Sharp overall focus, full body completely visible in frame." 
                 : "Sharp focus on eyes.";
 
-            return `Professional ${cameraAngle} portrait of a ${subtype} ${genderDescriptor} with distinct ${subtype} physical appearance and ${expression}. The athlete is ${flavor}.${actionContext} Wearing a clean, ${uniformColor} baseball cap and a plain, ${uniformColor} athletic button-down shirt. The baseball cap MUST be completely blank, with a smooth, unadorned fabric surface on the front; it has NO embroidery, NO letters, NO graphics, and NO logos. The button-down shirt is a plain solid color with NO branding, NO text, and NO insignia. Background is a ${bgTheme}. ${styleDesc} ${lightingInstruction} Zero words or letters allowed anywhere in the image. ${focusInstruction}`;
+            return `Professional ${cameraAngle} portrait of a ${subtype} ${genderDescriptor} with distinct ${subtype} physical appearance and ${expression}. The athlete is ${flavor}${eyewear}${wristwear}${tattoos}.${actionContext} Wearing a clean, ${uniformColor} baseball cap and a plain, ${uniformColor} athletic button-down shirt. The baseball cap MUST be completely blank, with a smooth, unadorned fabric surface on the front; it has NO embroidery, NO letters, NO graphics, and NO logos. The button-down shirt is a plain solid color with NO branding, NO text, and NO insignia. Background is a ${bgTheme}. ${styleDesc} ${lightingInstruction} Zero words or letters allowed anywhere in the image. ${focusInstruction}`;
         }
 
         async function renderPortrait() {
@@ -1053,7 +1114,10 @@
                 cameraAngle: cameraAngle,
                 flavor: flavor,
                 bodyShape: bodyShape,
-                uniformColor: uniformColor
+                uniformColor: uniformColor,
+                eyewear: builderState.eyewear,
+                wristwear: builderState.wristwear,
+                tattoos: builderState.tattoos
             });
 
             try {

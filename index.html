@@ -235,22 +235,22 @@
                     </div>
                     <div class="flex flex-col items-end gap-3 w-full xl:w-auto">
                         <div class="flex flex-col md:flex-row gap-2 w-full justify-end">
-                            <div class="w-full md:w-32">
-                                <!-- 2-Way Framing Toggle (League) -->
+                            <div class="w-full md:w-48">
+                                <!-- 3-Way Framing Toggle (League) -->
                                 <div class="relative w-full h-10 bg-white rounded-xl p-1 flex select-none overflow-hidden border border-slate-200 shadow-sm">
-                                    <div id="league-framing-bg" class="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-slate-100 rounded-lg shadow-inner transition-all duration-300 ease-in-out translate-x-0"></div>
+                                    <div id="league-framing-bg" class="absolute top-1 bottom-1 left-1 w-[calc(33.333%-4px)] bg-slate-100 rounded-lg shadow-inner transition-all duration-300 ease-in-out translate-x-0"></div>
                                     <button onclick="setFraming('portrait')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-blue-600" id="league-framing-portrait">Portrait</button>
                                     <button onclick="setFraming('fullbody')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="league-framing-fullbody">Full Body</button>
+                                    <button onclick="setFraming('action')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="league-framing-action">Action</button>
                                 </div>
                             </div>
-                            <div class="w-full md:w-[450px]">
-                                <!-- 5-Way Style Toggle (League) -->
+                            <div class="w-full md:w-[350px]">
+                                <!-- 4-Way Style Toggle (League) -->
                                 <div class="relative w-full h-10 bg-white rounded-xl p-1 flex select-none overflow-hidden border border-slate-200 shadow-sm">
-                                    <div id="league-toggle-bg" class="absolute top-1 bottom-1 left-1 w-[calc(20%-4px)] bg-slate-100 rounded-lg shadow-inner transition-all duration-300 ease-in-out translate-x-0"></div>
+                                    <div id="league-toggle-bg" class="absolute top-1 bottom-1 left-1 w-[calc(25%-4px)] bg-slate-100 rounded-lg shadow-inner transition-all duration-300 ease-in-out translate-x-0"></div>
                                     <button onclick="setVizStyle('realistic')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-blue-600" id="league-label-realistic">Realistic</button>
                                     <button onclick="setVizStyle('anime')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="league-label-anime">Anime</button>
                                     <button onclick="setVizStyle('stylized')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="league-label-stylized">Painterly</button>
-                                    <button onclick="setVizStyle('action')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="league-label-action">Action</button>
                                     <button onclick="setVizStyle('smb4')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="league-label-smb4">SMB4</button>
                                 </div>
                             </div>
@@ -310,24 +310,24 @@
                             <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Subject Name</label>
                             <input type="text" id="viz-name" class="w-full bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl font-black italic uppercase text-lg outline-none focus:border-blue-500">
                         </div>
-                        <div class="w-full lg:w-40">
+                        <div class="w-full lg:w-64">
                             <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Camera</label>
-                            <!-- 2-Way Framing Toggle -->
+                            <!-- 3-Way Framing Toggle -->
                             <div class="relative w-full h-12 bg-slate-100 rounded-2xl p-1 flex select-none overflow-hidden border border-slate-200 shadow-inner">
-                                <div id="viz-framing-bg" class="absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-white rounded-xl shadow-sm transition-all duration-300 ease-in-out translate-x-0"></div>
+                                <div id="viz-framing-bg" class="absolute top-1 bottom-1 left-1 w-[calc(33.333%-4px)] bg-white rounded-xl shadow-sm transition-all duration-300 ease-in-out translate-x-0"></div>
                                 <button onclick="setFraming('portrait')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-blue-600" id="label-framing-portrait">Portrait</button>
                                 <button onclick="setFraming('fullbody')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="label-framing-fullbody">Full Body</button>
+                                <button onclick="setFraming('action')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="label-framing-action">Action</button>
                             </div>
                         </div>
-                        <div class="w-full lg:w-[450px]">
+                        <div class="w-full lg:w-[350px]">
                             <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Art Style</label>
-                            <!-- 5-Way Style Toggle -->
+                            <!-- 4-Way Style Toggle -->
                             <div class="relative w-full h-12 bg-slate-100 rounded-2xl p-1 flex select-none overflow-hidden border border-slate-200 shadow-inner">
-                                <div id="viz-toggle-bg" class="absolute top-1 bottom-1 left-1 w-[calc(20%-4px)] bg-white rounded-xl shadow-sm transition-all duration-300 ease-in-out translate-x-0"></div>
+                                <div id="viz-toggle-bg" class="absolute top-1 bottom-1 left-1 w-[calc(25%-4px)] bg-white rounded-xl shadow-sm transition-all duration-300 ease-in-out translate-x-0"></div>
                                 <button onclick="setVizStyle('realistic')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-blue-600" id="label-realistic">Realistic</button>
                                 <button onclick="setVizStyle('anime')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="label-anime">Anime</button>
                                 <button onclick="setVizStyle('stylized')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="label-stylized">Painterly</button>
-                                <button onclick="setVizStyle('action')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="label-action">Action</button>
                                 <button onclick="setVizStyle('smb4')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="label-smb4">SMB4</button>
                             </div>
                         </div>
@@ -398,7 +398,7 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-slate-100 pb-6">
                     <div>
                         <h2 class="text-xl font-black uppercase italic text-slate-900">Franchise Expansion</h2>
-                        <p class="text-xs text-slate-500 uppercase font-mono mt-1">Generate dynamic, stylized Minor League Baseball (MiLB) logos for global expansion teams.</p>
+                        <p class="text-xs text-slate-500 uppercase font-mono mt-1">Generate dynamic logos for global expansion teams.</p>
                     </div>
                     <div class="flex flex-wrap gap-2">
                         <button onclick="shuffleAllTeams()" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-black uppercase italic text-xs transition-all shadow-md flex items-center gap-2">
@@ -1071,7 +1071,8 @@
             document.getElementById('viz-name').value = builderState.name;
             syncVizDropdowns();
             switchTab('tab-visualizer');
-            renderPortrait();
+            // Hide the image container until explicitly rendered
+            document.getElementById('portrait-result').classList.add('hidden');
         }
 
         // --- LEAGUE LOGIC ---
@@ -1215,7 +1216,8 @@
             document.getElementById('viz-name').value = p.name.replace(' ★', '');
             syncVizDropdowns();
             switchTab('tab-visualizer');
-            renderPortrait();
+            // Hide the image container until explicitly rendered
+            document.getElementById('portrait-result').classList.add('hidden');
         }
 
         function getCSVString() {
@@ -1309,10 +1311,12 @@
 
             const lPort = document.getElementById('label-framing-portrait');
             const lFull = document.getElementById('label-framing-fullbody');
+            const lAct = document.getElementById('label-framing-action');
             const llPort = document.getElementById('league-framing-portrait');
             const llFull = document.getElementById('league-framing-fullbody');
+            const llAct = document.getElementById('league-framing-action');
 
-            [lPort, lFull, llPort, llFull].forEach(el => {
+            [lPort, lFull, lAct, llPort, llFull, llAct].forEach(el => {
                 if(el) { el.classList.remove('text-blue-600'); el.classList.add('text-slate-400'); }
             });
 
@@ -1321,11 +1325,16 @@
                 if(bgLeague) bgLeague.style.transform = 'translateX(0)';
                 if(lPort) { lPort.classList.add('text-blue-600'); lPort.classList.remove('text-slate-400'); }
                 if(llPort) { llPort.classList.add('text-blue-600'); llPort.classList.remove('text-slate-400'); }
-            } else {
+            } else if (framing === 'fullbody') {
                 if(bgViz) bgViz.style.transform = 'translateX(100%)';
                 if(bgLeague) bgLeague.style.transform = 'translateX(100%)';
                 if(lFull) { lFull.classList.add('text-blue-600'); lFull.classList.remove('text-slate-400'); }
                 if(llFull) { llFull.classList.add('text-blue-600'); llFull.classList.remove('text-slate-400'); }
+            } else if (framing === 'action') {
+                if(bgViz) bgViz.style.transform = 'translateX(200%)';
+                if(bgLeague) bgLeague.style.transform = 'translateX(200%)';
+                if(lAct) { lAct.classList.add('text-blue-600'); lAct.classList.remove('text-slate-400'); }
+                if(llAct) { llAct.classList.add('text-blue-600'); llAct.classList.remove('text-slate-400'); }
             }
         }
 
@@ -1335,18 +1344,16 @@
             const labelR = document.getElementById('label-realistic');
             const labelA = document.getElementById('label-anime');
             const labelS = document.getElementById('label-stylized');
-            const labelAct = document.getElementById('label-action');
             const labelSMB = document.getElementById('label-smb4');
             
             const bgLeague = document.getElementById('league-toggle-bg');
             const lLabelR = document.getElementById('league-label-realistic');
             const lLabelA = document.getElementById('league-label-anime');
             const lLabelS = document.getElementById('league-label-stylized');
-            const lLabelAct = document.getElementById('league-label-action');
             const lLabelSMB = document.getElementById('league-label-smb4');
             
             // Remove all active states
-            [labelR, labelA, labelS, labelAct, labelSMB, lLabelR, lLabelA, lLabelS, lLabelAct, lLabelSMB].forEach(l => {
+            [labelR, labelA, labelS, labelSMB, lLabelR, lLabelA, lLabelS, lLabelSMB].forEach(l => {
                 if(l) {
                     l.classList.remove('text-blue-600');
                     l.classList.add('text-slate-400');
@@ -1368,14 +1375,9 @@
                 if(bgLeague) bgLeague.style.transform = 'translateX(200%)';
                 if(labelS) { labelS.classList.add('text-blue-600'); labelS.classList.remove('text-slate-400'); }
                 if(lLabelS) { lLabelS.classList.add('text-blue-600'); lLabelS.classList.remove('text-slate-400'); }
-            } else if (style === 'action') {
+            } else if (style === 'smb4') {
                 if(bg) bg.style.transform = 'translateX(300%)';
                 if(bgLeague) bgLeague.style.transform = 'translateX(300%)';
-                if(labelAct) { labelAct.classList.add('text-blue-600'); labelAct.classList.remove('text-slate-400'); }
-                if(lLabelAct) { lLabelAct.classList.add('text-blue-600'); lLabelAct.classList.remove('text-slate-400'); }
-            } else if (style === 'smb4') {
-                if(bg) bg.style.transform = 'translateX(400%)';
-                if(bgLeague) bgLeague.style.transform = 'translateX(400%)';
                 if(labelSMB) { labelSMB.classList.add('text-blue-600'); labelSMB.classList.remove('text-slate-400'); }
                 if(lLabelSMB) { lLabelSMB.classList.add('text-blue-600'); lLabelSMB.classList.remove('text-slate-400'); }
             }
@@ -1385,8 +1387,9 @@
             let styleDesc = "";
             let cameraAngle = playerObj.cameraAngle || "close-up headshot";
             let actionContext = "";
+            let headwear = "baseball cap";
 
-            if (currentFraming === 'fullbody' && currentVizStyle !== 'action') {
+            if (currentFraming === 'fullbody') {
                 cameraAngle = "full-body wide shot standing proudly, showing the complete character from head to toe including cleats";
             }
 
@@ -1407,45 +1410,51 @@
 
             // Adjust tattoo description based on framing/style for realism
             if (playerObj.tattoos && playerObj.tattoos.includes("calf")) {
-                if (currentFraming !== 'fullbody' && currentVizStyle !== 'action') {
+                if (currentFraming !== 'fullbody' && currentFraming !== 'action') {
                     // If not a full body shot, calf tattoos are unlikely to be visible
                     tattoos = ""; 
                 }
             }
 
-            if (currentVizStyle === 'action') {
+            if (currentFraming === 'action') {
                 equipment = ""; // Let action pose dictate the equipment
                 const ACTION_POSES = [
-                    "mid-swing hitting a fastball, bat connecting with the ball",
-                    "diving parallel to the ground to catch a hard line drive with dirt flying, throwing hand is completely bare",
-                    "in a mid-pitching motion, leg kicked high, throwing a fastball with a completely bare hand",
-                    "sliding aggressively into a base through a cloud of dust",
-                    "leaping high against the outfield wall to rob a home run, throwing hand is completely bare",
-                    "charging a ground ball and throwing on the run with a completely bare throwing hand"
+                    "mid-swing hitting a fastball, gripping a wooden bat with both hands, bat connecting with the ball",
+                    "diving parallel to the ground to catch a hard line drive in a leather fielder's glove with dirt flying, throwing hand is completely bare",
+                    "in a mid-pitching motion, leg kicked high, wearing a leather fielder's glove on the non-throwing hand, throwing a fastball with a completely bare hand",
+                    "sliding aggressively into a base through a cloud of dust, wearing professional batting gloves",
+                    "leaping high against the outfield wall to rob a home run with a leather fielder's glove, throwing hand is completely bare",
+                    "charging a ground ball and throwing on the run, wearing a leather fielder's glove, with a completely bare throwing hand"
                 ];
                 const pose = ACTION_POSES[Math.floor(Math.random() * ACTION_POSES.length)];
+                
+                if (pose.includes("hitting") || pose.includes("sliding")) {
+                    headwear = "professional glossy batting helmet";
+                }
+
                 cameraAngle = "full-body dynamic wide action shot";
-                actionContext = ` The character is physically ${pose}.`;
-                styleDesc = "High-end AAA 3D action video game rendering engine style. Captured mid-action during a high-stakes professional baseball game with dramatic in-game cinematic camera angles. Highly detailed 3D PBR textures, intense motion, flying dirt particles, and dynamic character models. The character is wearing a highly detailed solid color baseball jersey and blank cap. Absolutely no text, no logos, and no writing.";
-            } else if (currentVizStyle === 'stylized') {
-                styleDesc = "Masterful oil painting style with visible expressive brushwork and rich textures. Painterly execution with soulful strokes and artistic highlights. Impressionistic background with soft blended colors. The character is wearing a solid hue baseball jersey and blank cap. No text, no logos, no ink outlines. Pure fine art aesthetic.";
+                actionContext = ` The character is physically ${pose}. Captured mid-action during a high-stakes professional baseball game with intense motion.`;
+            }
+            
+            if (currentVizStyle === 'stylized') {
+                styleDesc = `Masterful oil painting style with visible expressive brushwork and rich textures. Painterly execution with soulful strokes and artistic highlights. Impressionistic background with soft blended colors. The character is wearing a solid hue baseball jersey and blank ${headwear}. No text, no logos, no ink outlines. Pure fine art aesthetic.`;
             } else if (currentVizStyle === 'anime') {
-                styleDesc = `High-end 3D cel-shaded anime fighting game art style, reminiscent of modern Arc System Works games. Extremely detailed 2.5D cel-shading, striking bold ink-like outer outlines, edgy and vibrant color palettes, and intense dynamic proportions. CRUCIAL: Accurately render the character with a ${subtype} skin tone and ethnic features. The character is wearing a highly stylized, heavily folded solid color baseball jersey and blank cap. Absolutely no text, no logos, and no writing.`;
+                styleDesc = `High-end 3D cel-shaded anime fighting game art style, reminiscent of modern Arc System Works games. Extremely detailed 2.5D cel-shading, striking bold ink-like outer outlines, edgy and vibrant color palettes, and intense dynamic proportions. CRUCIAL: Accurately render the character with a ${subtype} skin tone and ethnic features. The character is wearing a highly stylized, heavily folded solid color baseball jersey and blank ${headwear}. Absolutely no text, no logos, and no writing.`;
             } else if (currentVizStyle === 'smb4') {
                 styleDesc = `3D stylized cartoon video game character render, inspired by modern arcade baseball games. Features a ${bodyShape} physique with stylized proportions, slightly oversized heads, and expressive comical facial features. Rendered with rich 3D PBR materials. CRUCIAL: The character MUST clearly display an accurate ${subtype} skin tone and heritage. Smooth clay-like skin textures, and high-fidelity stylized 3D fabric. Absolutely no text, no logos, and no writing.`;
-            } else {
-                styleDesc = "Professional sports photography style. Hyper-realistic photorealistic textures. Rich, vibrant color photography. The player is wearing a richly colored solid-hue uniform with zero branding, zero logos, and absolute zero text.";
+            } else { // realistic
+                styleDesc = `Professional sports photography style. Hyper-realistic photorealistic textures. Rich, vibrant color photography. The player is wearing a richly colored solid-hue uniform with zero branding, zero logos, and absolute zero text.`;
             }
             
             let lightingInstruction = "The final image MUST be in full natural color with realistic skin tones.";
-            if (currentVizStyle === 'action') {
-                lightingInstruction = "The final image MUST feature cinematic AAA game engine lighting with dramatic volumetric rays, high-contrast rim lighting, glowing bloom effects, flying particle effects, and beautiful background motion blur to emphasize the high-speed 3D action aesthetic.";
-            } else if (currentVizStyle === 'anime') {
+            if (currentVizStyle === 'anime') {
                 lightingInstruction = "The final image MUST feature intense fighting game lighting with dramatic, high-contrast rim lights, deep angular shadows, and glowing bloom effects to emphasize the 2.5D cel-shaded aesthetic.";
             } else if (currentVizStyle === 'stylized') {
                 lightingInstruction = "The final image MUST feature warm, dramatic lighting with deep shadows and vibrant impasto highlights.";
             } else if (currentVizStyle === 'smb4') {
                 lightingInstruction = "The final image MUST feature bright, colorful, high-contrast 3D rendering engine lighting, with vibrant rim lights and saturated environment colors appropriate for a lively video game.";
+            } else if (currentFraming === 'action') {
+                lightingInstruction += " Feature dramatic volumetric rays, high-contrast rim lighting, flying particle effects, and beautiful background motion blur to emphasize the high-speed action aesthetic.";
             } else if (bgTheme.includes("sunset")) {
                 lightingInstruction += " Use warm golden hour lighting on the subject's face.";
             } else if (bgTheme.includes("sunny afternoon")) {
@@ -1454,11 +1463,11 @@
                 lightingInstruction += " Use strong artificial floodlight illumination with cool rim lighting.";
             }
 
-            const focusInstruction = (currentFraming === 'fullbody' || currentVizStyle === 'action') 
+            const focusInstruction = (currentFraming === 'fullbody' || currentFraming === 'action') 
                 ? "Sharp overall focus, full body completely visible in frame." 
                 : "Sharp focus on eyes.";
 
-            return `Professional ${cameraAngle} portrait of a ${subtype} ${genderDescriptor}${hairDescriptor} with distinct ${subtype} physical appearance and ${expression}. The athlete is ${flavor}${eyewear}${wristwear}${tattoos}${equipment}.${actionContext} Wearing a clean, ${uniformColor} baseball cap and a plain, ${uniformColor} athletic button-down shirt. The baseball cap MUST be completely blank, with a smooth, unadorned fabric surface on the front; it has NO embroidery, NO letters, NO graphics, and NO logos. The button-down shirt is a plain solid color with NO branding, NO text, and NO insignia. Background is a ${bgTheme}. ${styleDesc} ${lightingInstruction} Zero words or letters allowed anywhere in the image. NO buckles, NO heavy leather straps, NO belts on arms, NO fingerless gloves, NO batting glove on throwing hand. ${focusInstruction}`;
+            return `Professional ${cameraAngle} portrait of a ${subtype} ${genderDescriptor}${hairDescriptor} with distinct ${subtype} physical appearance and ${expression}. The athlete is ${flavor}${eyewear}${wristwear}${tattoos}${equipment}.${actionContext} Wearing a clean, ${uniformColor} ${headwear} and a plain, ${uniformColor} athletic button-down shirt. The ${headwear} MUST be completely blank, with a smooth, unadorned surface on the front; it has NO embroidery, NO letters, NO graphics, and NO logos. The button-down shirt is a plain solid color with NO branding, NO text, and NO insignia. Background is a ${bgTheme}. ${styleDesc} ${lightingInstruction} Zero words or letters allowed anywhere in the image. NO buckles, NO heavy leather straps, NO belts on arms, NO fingerless gloves, NO batting glove on throwing hand. ${focusInstruction}`;
         }
 
         async function renderPortrait() {

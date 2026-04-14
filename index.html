@@ -74,7 +74,7 @@
 
     <!-- GLOBAL HEADER -->
     <header class="arcade-header shadow-lg sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex items-center gap-4">
                 <div class="w-8 h-8 relative">
                     <div class="absolute top-0 w-0 h-0 border-l-[16px] border-l-transparent border-r-[16px] border-r-transparent border-bottom-[16px] border-bottom-blue-500"></div>
@@ -84,18 +84,19 @@
                     <h1 class="text-2xl font-black italic tracking-tighter text-white uppercase leading-none">
                         DLB <span class="text-blue-500">Command Center</span>
                     </h1>
-                    <p class="text-[10px] font-mono text-slate-400 mt-1 tracking-widest uppercase italic">System v7.3 // Super Mega Update</p>
+                    <p class="text-[10px] font-mono text-slate-400 mt-1 tracking-widest uppercase italic">System v7.4 // Brand Expansion</p>
                 </div>
             </div>
-            <nav class="flex gap-8 text-sm font-bold uppercase tracking-tight text-slate-400" id="mainNav">
+            <nav class="flex flex-wrap justify-center gap-4 md:gap-8 text-sm font-bold uppercase tracking-tight text-slate-400" id="mainNav">
                 <button class="nav-item nav-active py-2" data-target="tab-builder">Drafting Room</button>
                 <button class="nav-item py-2" data-target="tab-league">Front Office</button>
                 <button class="nav-item py-2" data-target="tab-visualizer">AI Imaging</button>
+                <button class="nav-item py-2 text-yellow-500" data-target="tab-teams">Franchise Expansion</button>
             </nav>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto p-6">
+    <main class="max-w-7xl mx-auto p-6">
         
         <!-- SECTION: PLAYER BUILDER -->
         <section id="tab-builder" class="tab-content animate-in fade-in duration-300">
@@ -349,6 +350,41 @@
                 </div>
             </div>
         </section>
+
+        <!-- SECTION: TEAM LOGO GENERATOR (FRANCHISE EXPANSION) -->
+        <section id="tab-teams" class="tab-content hidden animate-in fade-in duration-300">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 mb-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-slate-100 pb-6">
+                    <div>
+                        <h2 class="text-xl font-black uppercase italic text-slate-900">Franchise Expansion</h2>
+                        <p class="text-xs text-slate-500 uppercase font-mono mt-1">Generate dynamic, stylized Minor League Baseball (MiLB) logos for global expansion teams.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="shuffleAllTeams()" class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-xl font-black uppercase italic text-xs transition-all shadow-md flex items-center gap-2">
+                            <span>🎲</span> Shuffle Franchises
+                        </button>
+                        <button onclick="batchGenerateTeams()" id="batch-teams-btn" class="bg-yellow-500 hover:bg-yellow-400 text-slate-900 px-6 py-3 rounded-xl font-black uppercase italic text-xs transition-all shadow-md flex items-center gap-2">
+                            <span>🎨</span> Generate All 10 Logos
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Batch Team Progress Bar -->
+                <div id="teams-progress-container" class="hidden mb-8">
+                    <div class="flex justify-between items-center text-[10px] font-bold uppercase text-slate-500 mb-2">
+                        <span id="teams-progress-text">Designing Logos...</span>
+                        <span id="teams-progress-count" class="text-yellow-600 font-black">0 / 10</span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                        <div id="teams-progress-bar" class="h-full bg-yellow-400 transition-all duration-300" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div id="teams-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+                    <!-- Teams will be injected here via JS -->
+                </div>
+            </div>
+        </section>
     </main>
 
     <script>
@@ -505,6 +541,109 @@
             "showing tattoos on their calf muscle"
         ];
 
+        // --- NEW: FRANCHISE TEAMS DATA & RANDOMIZERS ---
+        const FRANCHISE_TEAMS = [
+            { id: 't1', region: 'American', city: 'Savannah', name: 'Swamp Foxes', colors: 'Neon Green, Swamp Brown, Orange', mascot: 'cunning fox wearing a baseball cap and swinging a bat made of a cypress branch' },
+            { id: 't2', region: 'American', city: 'Portland', name: 'Lumberjacks', colors: 'Flannel Red, Pine Green, Wood Brown', mascot: 'burly lumberjack swinging a giant baseball bat like an axe' },
+            { id: 't3', region: 'Latin', city: 'San Juan', name: 'Chupacabras', colors: 'Neon Purple, Lime Green, Black', mascot: 'fierce but cartoonish chupacabra gripping a baseball' },
+            { id: 't4', region: 'Latin', city: 'Havana', name: 'Sugar Kings', colors: 'Teal, Coral Pink, Gold', mascot: 'regal lion wearing a crown made of sugarcane, chewing on a baseball bat' },
+            { id: 't5', region: 'Japanese', city: 'Kyoto', name: 'Kitsune', colors: 'Crimson, Gold, White', mascot: 'nine-tailed mystical fox holding a flaming baseball' },
+            { id: 't6', region: 'Japanese', city: 'Tokyo', name: 'Kaiju', colors: 'Radioactive Green, Magenta, Black', mascot: 'giant atomic lizard stepping on a baseball stadium, holding a bat' },
+            { id: 't7', region: 'Korean', city: 'Seoul', name: 'Dokkaebi', colors: 'Cobalt Blue, Neon Pink, Silver', mascot: 'Korean goblin (Dokkaebi) wielding a spiked baseball bat club' },
+            { id: 't8', region: 'Korean', city: 'Busan', name: 'Sea Dragons', colors: 'Aqua, Navy, Gold', mascot: 'fierce sea dragon coiled around a baseball anchor' },
+            { id: 't9', region: 'European', city: 'London', name: 'Gargoyles', colors: 'Slate Grey, Blood Red, Gold', mascot: 'stone gargoyle perched on a baseball' },
+            { id: 't10', region: 'European', city: 'Rome', name: 'Gladiators', colors: 'Maroon, Bronze, White', mascot: 'Roman gladiator swinging a bat shaped like a gladius sword' }
+        ];
+
+        const CITIES_BY_REGION = {
+            'American': ['Savannah', 'Portland', 'Omaha', 'Richmond', 'Albuquerque', 'Durham', 'Toledo', 'El Paso', 'Las Vegas', 'Memphis', 'Boise', 'Chattanooga', 'Amarillo', 'Pensacola', 'Syracuse', 'Tacoma', 'Tulsa', 'Wichita'],
+            'Latin': ['San Juan', 'Havana', 'Monterrey', 'Caracas', 'Santo Domingo', 'Bogota', 'San Jose', 'Panama City', 'Guadalajara', 'San Salvador', 'Managua', 'Cartagena', 'Ponce', 'Santiago'],
+            'Japanese': ['Kyoto', 'Tokyo', 'Osaka', 'Sapporo', 'Fukuoka', 'Yokohama', 'Kobe', 'Nagoya', 'Hiroshima', 'Sendai', 'Chiba', 'Saitama', 'Okinawa'],
+            'Korean': ['Seoul', 'Busan', 'Incheon', 'Daegu', 'Gwangju', 'Daejeon', 'Ulsan', 'Suwon', 'Changwon', 'Jeonju', 'Cheongju', 'Jeju'],
+            'European': ['London', 'Rome', 'Berlin', 'Madrid', 'Paris', 'Amsterdam', 'Prague', 'Athens', 'Munich', 'Barcelona', 'Dublin', 'Vienna', 'Stockholm', 'Milan']
+        };
+
+        const TEAM_IDENTITIES = [
+            { name: 'Trash Pandas', mascot: 'raccoon holding a half-eaten hotdog bat' },
+            { name: 'Yard Goats', mascot: 'tough billy goat chewing a baseball' },
+            { name: 'IronPigs', mascot: 'mechanical pig breathing steam with a bat' },
+            { name: 'Flying Squirrels', mascot: 'flying squirrel gliding with a baseball' },
+            { name: 'Chihuahuas', mascot: 'fierce little dog barking at a baseball' },
+            { name: 'RubberDucks', mascot: 'giant yellow rubber duck with a baseball cap' },
+            { name: 'Prawns', mascot: 'muscular shrimp swinging a bat' },
+            { name: 'Mud Hens', mascot: 'grumpy swamp bird covered in mud holding a bat' },
+            { name: 'Isotopes', mascot: 'glowing atomic superhero swinging a bat' },
+            { name: 'Aviators', mascot: 'vintage pilot wearing goggles with a bat' },
+            { name: 'Space Cowboys', mascot: 'astronaut riding an asteroid holding a lasso and bat' },
+            { name: 'Gargoyles', mascot: 'stone gargoyle perched on a baseball' },
+            { name: 'Kaiju', mascot: 'giant atomic lizard stepping on a stadium' },
+            { name: 'Kitsune', mascot: 'nine-tailed mystical fox holding a flaming baseball' },
+            { name: 'Chupacabras', mascot: 'fierce chupacabra gripping a baseball' },
+            { name: 'Lumberjacks', mascot: 'burly lumberjack swinging a giant baseball bat like an axe' },
+            { name: 'Swamp Foxes', mascot: 'cunning fox wearing a baseball cap and swinging a bat made of a cypress branch' },
+            { name: 'Sugar Kings', mascot: 'regal lion wearing a crown made of sugarcane, chewing on a baseball bat' },
+            { name: 'Dokkaebi', mascot: 'Korean goblin (Dokkaebi) wielding a spiked baseball bat club' },
+            { name: 'Sea Dragons', mascot: 'fierce sea dragon coiled around a baseball anchor' },
+            { name: 'Gladiators', mascot: 'Roman gladiator swinging a bat shaped like a gladius sword' },
+            { name: 'Monarchs', mascot: 'regal butterfly wearing a crown and holding a tiny bat' },
+            { name: 'Vampires', mascot: 'vampire bat hanging upside down from a baseball bat' },
+            { name: 'Bumblebees', mascot: 'giant fuzzy bee swinging a stinger bat' },
+            { name: 'River Monsters', mascot: 'swampy creature rising from water with a bat' },
+            { name: 'Thunderbirds', mascot: 'mythical bird made of lightning grasping a baseball' },
+            { name: 'Biscuits', mascot: 'angry buttered biscuit holding a bat' },
+            { name: 'Rumble Ponies', mascot: 'fierce carousel horse breaking free with a bat' },
+            { name: 'Hops', mascot: 'angry green hop cone swinging a baseball bat' },
+            { name: 'Blue Wahoos', mascot: 'aggressive blue fish leaping with a bat' },
+            { name: 'TinCaps', mascot: 'apple with a tin pot on its head holding a bat' },
+            { name: 'Mighty Mussels', mascot: 'bodybuilder mussel flexing its bicep while holding a bat' },
+            { name: 'Cannon Ballers', mascot: 'human cannonball wearing a baseball helmet' },
+            { name: 'Skeeters', mascot: 'giant menacing mosquito wielding a baseball bat' },
+            { name: 'Vipers', mascot: 'coiled venomous snake wrapped around a baseball bat' },
+            { name: 'Kraken', mascot: 'giant purple squid tentacles crushing a baseball' },
+            { name: 'Yetis', mascot: 'abominable snowman covered in ice holding an icy bat' },
+            { name: 'Pizza Rats', mascot: 'giant rat running with a slice of pizza shaped like a bat' },
+            { name: 'Grizzlies', mascot: 'roaring grizzly bear wearing a baseball cap' },
+            { name: 'Fireflies', mascot: 'glowing firefly holding a neon baseball bat' },
+            { name: 'Grasshoppers', mascot: 'giant leaping grasshopper with a baseball' },
+            { name: 'Lugnuts', mascot: 'anthropomorphic mechanical lugnut with a wrench-bat' },
+            { name: 'Pelicans', mascot: 'cool pelican catching a baseball in its giant beak' },
+            { name: 'Marauders', mascot: 'swashbuckling pirate with a peg leg and a wooden bat' },
+            { name: 'Meteors', mascot: 'flaming asteroid with an angry face streaking across the sky' },
+            { name: 'Cyclones', mascot: 'spinning tornado with eyes holding a baseball bat' },
+            { name: 'Phantoms', mascot: 'spooky glowing ghost wearing a vintage baseball cap' },
+            { name: 'Tacos', mascot: 'smiling taco wearing a sombrero and swinging a bat' },
+            { name: 'Barons', mascot: 'wealthy aristocratic tycoon with a monocle and a diamond bat' },
+            { name: 'Invaders', mascot: 'little green alien flying a saucer over a baseball diamond' },
+            { name: 'Avalanches', mascot: 'massive snow monster throwing a snowball-baseball' },
+            { name: 'Wendigos', mascot: 'scary mythical forest beast gripping a wooden bat' },
+            { name: 'River Cats', mascot: 'cool wildcat wearing sunglasses and chewing bubblegum' },
+            { name: 'Timber Rattlers', mascot: 'rattlesnake coiled around a wooden baseball bat' },
+            { name: 'Bulls', mascot: 'snorting bull with a ring in its nose ready to hit' },
+            { name: 'Renegades', mascot: 'masked outlaw riding a horse with a baseball bat' },
+            { name: 'Zephyrs', mascot: 'mythological wind god blowing a baseball over the fence' },
+            { name: 'Wave', mascot: 'a large tidal wave looming over a baseball diamond' }
+        ];
+
+        const TEAM_COLORS = [
+            'Neon Green, Swamp Brown, Orange',
+            'Flannel Red, Pine Green, Wood Brown',
+            'Neon Purple, Lime Green, Black',
+            'Teal, Coral Pink, Gold',
+            'Crimson, Gold, White',
+            'Radioactive Green, Magenta, Black',
+            'Cobalt Blue, Neon Pink, Silver',
+            'Aqua, Navy, Gold',
+            'Slate Grey, Blood Red, Gold',
+            'Maroon, Bronze, White',
+            'Electric Blue, Neon Orange, Charcoal',
+            'Bubblegum Pink, Cyan, Yellow',
+            'Midnight Blue, Copper, White',
+            'Kelly Green, Athletic Gold, White',
+            'Lavender, Obsidian, Silver',
+            'Burnt Orange, Desert Sand, Turquoise',
+            'Hot Pink, Mint Green, Black'
+        ];
+
         // --- GLOBAL STATE ---
         let builderState = {
             name: "", exp: "Rookie", isStar: false,
@@ -531,6 +670,11 @@
         function switchTab(targetId) {
             document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('nav-active', b.dataset.target === targetId));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('hidden', c.id !== targetId));
+            
+            // If switching to teams tab, render it if empty
+            if(targetId === 'tab-teams' && document.getElementById('teams-grid').children.length === 0) {
+                renderTeamsTab();
+            }
         }
 
         document.querySelectorAll('.nav-item').forEach(btn => {
@@ -1199,10 +1343,186 @@
             }, 3000);
         }
 
+        // --- TEAM LOGO GENERATOR LOGIC ---
+        function renderTeamsTab() {
+            const container = document.getElementById('teams-grid');
+            container.innerHTML = '';
+
+            FRANCHISE_TEAMS.forEach(team => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-50 border-2 border-slate-100 p-4 rounded-2xl flex flex-col h-full";
+                card.innerHTML = `
+                    <div class="mb-4 cursor-pointer group hover:bg-slate-100 p-2 -m-2 rounded-xl transition-all" onclick="randomizeTeamIdentity('${team.id}')" title="Click to generate new team identity">
+                        <div class="flex justify-between items-center">
+                            <div id="team-region-${team.id}" class="text-[9px] font-black uppercase text-slate-400 tracking-widest">${team.region} Region</div>
+                            <span class="text-xs text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity">🔄</span>
+                        </div>
+                        <div id="team-city-${team.id}" class="text-sm font-black italic uppercase text-slate-900 leading-tight">${team.city}</div>
+                        <div id="team-name-${team.id}" class="text-xl font-black italic uppercase text-blue-600 leading-none">${team.name}</div>
+                    </div>
+                    
+                    <div class="img-container aspect-square bg-white rounded-xl border border-slate-200 overflow-hidden relative mb-4 flex items-center justify-center shadow-sm">
+                        <div id="shimmer-${team.id}" class="hidden loading-shimmer absolute inset-0 z-10 flex items-center justify-center">
+                            <span class="text-slate-400 font-bold uppercase italic text-[10px] text-center px-4">Drafting Logo...</span>
+                        </div>
+                        <img id="img-${team.id}" class="w-full h-full object-contain hidden" />
+                        <div class="img-overlay cursor-pointer text-[10px]" onclick="generateTeamLogo('${team.id}')">Regenerate Logo</div>
+                        <div id="placeholder-${team.id}" class="text-slate-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto space-y-2">
+                        <div class="text-[9px] font-bold text-slate-500 cursor-pointer hover:bg-slate-100 p-2 -m-2 rounded-lg transition-colors flex justify-between items-center group" onclick="randomizeTeamColors('${team.id}')" title="Click to generate new colors">
+                            <div><span class="uppercase">Colors:</span> <span id="team-colors-${team.id}">${team.colors}</span></div>
+                            <span class="text-xs text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity">🔄</span>
+                        </div>
+                        <div class="flex gap-2 pt-2">
+                            <button id="gen-btn-${team.id}" onclick="generateTeamLogo('${team.id}')" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white py-2 rounded-lg font-black uppercase italic text-[10px] transition-all">Generate</button>
+                            <button id="dl-btn-${team.id}" onclick="downloadTeamLogo('${team.id}')" class="hidden flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg font-black uppercase italic text-[10px] transition-all shadow-md">Download</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function resetTeamImage(teamId) {
+            document.getElementById(`img-${teamId}`).classList.add('hidden');
+            document.getElementById(`dl-btn-${teamId}`).classList.add('hidden');
+            document.getElementById(`shimmer-${teamId}`).classList.add('hidden');
+            document.getElementById(`placeholder-${teamId}`).classList.remove('hidden');
+            document.getElementById(`gen-btn-${teamId}`).innerText = "Generate";
+        }
+
+        function randomizeTeamIdentity(teamId) {
+            const team = FRANCHISE_TEAMS.find(t => t.id === teamId);
+            if (!team) return;
+
+            // Pick a random region and city
+            const regions = Object.keys(CITIES_BY_REGION);
+            const randomRegion = regions[Math.floor(Math.random() * regions.length)];
+            const cities = CITIES_BY_REGION[randomRegion];
+            const randomCity = cities[Math.floor(Math.random() * cities.length)];
+
+            // Pick a random identity (name + mascot)
+            const identity = TEAM_IDENTITIES[Math.floor(Math.random() * TEAM_IDENTITIES.length)];
+
+            // Update data
+            team.region = randomRegion;
+            team.city = randomCity;
+            team.name = identity.name;
+            team.mascot = identity.mascot;
+
+            // Update DOM
+            document.getElementById(`team-region-${teamId}`).innerText = `${team.region} Region`;
+            document.getElementById(`team-city-${teamId}`).innerText = team.city;
+            document.getElementById(`team-name-${teamId}`).innerText = team.name;
+
+            // Clear image so it doesn't mismatch the new name
+            resetTeamImage(teamId);
+        }
+
+        function randomizeTeamColors(teamId) {
+            const team = FRANCHISE_TEAMS.find(t => t.id === teamId);
+            if (!team) return;
+
+            const randomColors = TEAM_COLORS[Math.floor(Math.random() * TEAM_COLORS.length)];
+            
+            team.colors = randomColors;
+            document.getElementById(`team-colors-${teamId}`).innerText = team.colors;
+
+            // Clear image so it doesn't mismatch the new colors
+            resetTeamImage(teamId);
+        }
+
+        function shuffleAllTeams() {
+            FRANCHISE_TEAMS.forEach(team => {
+                randomizeTeamIdentity(team.id);
+                randomizeTeamColors(team.id);
+            });
+        }
+
+        async function generateTeamLogo(teamId) {
+            const team = FRANCHISE_TEAMS.find(t => t.id === teamId);
+            if (!team) return;
+
+            document.getElementById(`placeholder-${team.id}`).classList.add('hidden');
+            document.getElementById(`img-${team.id}`).classList.add('hidden');
+            document.getElementById(`dl-btn-${team.id}`).classList.add('hidden');
+            document.getElementById(`shimmer-${team.id}`).classList.remove('hidden');
+            document.getElementById(`gen-btn-${team.id}`).innerText = "Generating...";
+
+            const prompt = `A high-quality, vibrant vector mascot logo for a minor league baseball team named the '${team.city} ${team.name}'. The mascot features a ${team.mascot}. The team colors are ${team.colors}. The design MUST be a bold, dynamic sports vector art style with thick clean outlines, highly stylized, energetic, fun, and quirky. The logo MUST feature bold, stylized sports typography reading exactly '${team.city} ${team.name}' integrated into the design. Pure white background.`;
+
+            try {
+                const url = await callImagen(prompt);
+                if (url) {
+                    const imgEl = document.getElementById(`img-${team.id}`);
+                    imgEl.src = url;
+                    imgEl.onload = () => {
+                        imgEl.classList.remove('hidden');
+                        document.getElementById(`shimmer-${team.id}`).classList.add('hidden');
+                        document.getElementById(`dl-btn-${team.id}`).classList.remove('hidden');
+                        document.getElementById(`gen-btn-${team.id}`).innerText = "Re-roll";
+                    };
+                }
+            } catch (e) {
+                console.error(`Failed to generate logo for ${team.name}`, e);
+                document.getElementById(`shimmer-${team.id}`).innerHTML = '<span class="text-red-500 font-bold uppercase italic text-[10px] text-center px-4">Failed. Try Again.</span>';
+                document.getElementById(`gen-btn-${team.id}`).innerText = "Generate";
+            }
+        }
+
+        function downloadTeamLogo(teamId) {
+            const team = FRANCHISE_TEAMS.find(t => t.id === teamId);
+            const imgEl = document.getElementById(`img-${teamId}`);
+            if (team && imgEl && imgEl.src) {
+                const safeName = `${team.city}_${team.name}`.replace(/\s+/g, '_').toLowerCase();
+                saveAs(imgEl.src, `${safeName}_logo.png`);
+            }
+        }
+
+        async function batchGenerateTeams() {
+            const batchBtn = document.getElementById('batch-teams-btn');
+            const progressContainer = document.getElementById('teams-progress-container');
+            const progressBar = document.getElementById('teams-progress-bar');
+            const progressText = document.getElementById('teams-progress-text');
+            const progressCount = document.getElementById('teams-progress-count');
+
+            batchBtn.disabled = true;
+            batchBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            progressContainer.classList.remove('hidden');
+
+            for (let i = 0; i < FRANCHISE_TEAMS.length; i++) {
+                const team = FRANCHISE_TEAMS[i];
+                
+                progressText.innerText = `Designing ${team.city} ${team.name}...`;
+                progressCount.innerText = `${i + 1} / ${FRANCHISE_TEAMS.length}`;
+                progressBar.style.width = `${((i + 1) / FRANCHISE_TEAMS.length) * 100}%`;
+
+                await generateTeamLogo(team.id);
+
+                // Wait ~4s to strictly respect API rate limits
+                if (i < FRANCHISE_TEAMS.length - 1) {
+                    await new Promise(r => setTimeout(r, 4000));
+                }
+            }
+
+            progressText.innerText = `All Logos Complete!`;
+            setTimeout(() => {
+                progressContainer.classList.add('hidden');
+                batchBtn.disabled = false;
+                batchBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                progressBar.style.width = '0%';
+            }, 3000);
+        }
+
+        // --- SHARED API CALL ---
         async function callImagen(promptText) {
             const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
-            // Correct format: instances is an object containing the prompt, not an array
-            const payload = { instances: { prompt: promptText }, parameters: { sampleCount: 1 } };
+            // Correct format: instances is an array containing the prompt object
+            const payload = { instances: [{ prompt: promptText }], parameters: { sampleCount: 1 } };
             let retries = 0;
             const maxRetries = 5;
             const backoff = [1000, 2000, 4000, 8000, 16000];
@@ -1238,6 +1558,7 @@
         renderSprayChart();
         setFraming('portrait');
         setVizStyle('realistic');
+        renderTeamsTab();
     </script>
 </body>
 </html>

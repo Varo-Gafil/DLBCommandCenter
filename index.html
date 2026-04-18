@@ -84,12 +84,13 @@
                     <h1 class="text-2xl font-black italic tracking-tighter text-white uppercase leading-none">
                         DLB <span class="text-blue-500">Command Center</span>
                     </h1>
-                    <p class="text-[10px] font-mono text-slate-400 mt-1 tracking-widest uppercase italic">System v7.4 // Brand Expansion</p>
+                    <p class="text-[10px] font-mono text-slate-400 mt-1 tracking-widest uppercase italic">System v8.0 // Core Rule Integration</p>
                 </div>
             </div>
             <nav class="flex flex-wrap justify-center gap-4 md:gap-8 text-sm font-bold uppercase tracking-tight text-slate-400" id="mainNav">
                 <button class="nav-item nav-active py-2" data-target="tab-builder">Drafting Room</button>
-                <button class="nav-item py-2" data-target="tab-league">Front Office</button>
+                <button class="nav-item py-2" data-target="tab-league">Free Agents</button>
+                <button class="nav-item py-2 text-green-500" data-target="tab-active-league">The League</button>
                 <button class="nav-item py-2" data-target="tab-visualizer">AI Imaging</button>
                 <button class="nav-item py-2 text-yellow-500" data-target="tab-teams">Franchise Expansion</button>
             </nav>
@@ -118,9 +119,9 @@
                             <div>
                                 <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Experience Tier</label>
                                 <select id="builder-exp" onchange="updateBuilderUI()" class="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl font-bold">
-                                    <option value="Rookie">Rookie (Fatigue 1:1)</option>
-                                    <option value="Journeyman">Journeyman (Fatigue 1:2)</option>
-                                    <option value="Veteran">Veteran (Fatigue 1:3)</option>
+                                    <option value="Rookie">Rookie (10 pts)</option>
+                                    <option value="Journeyman">Journeyman (15 pts)</option>
+                                    <option value="Veteran">Veteran (20 pts)</option>
                                 </select>
                             </div>
                             <div class="flex items-end">
@@ -141,6 +142,13 @@
                                     <option value="LF">Left Field</option>
                                     <option value="CF">Center Field</option>
                                     <option value="RF">Right Field</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Batting Hand</label>
+                                <select id="builder-hand" onchange="updateBuilderUI()" class="w-full bg-slate-50 border-2 border-slate-100 p-3 rounded-xl font-bold transition-all">
+                                    <option value="Righty">Right-Handed (R)</option>
+                                    <option value="Lefty">Left-Handed (L)</option>
                                 </select>
                             </div>
                             <div id="secondary-pos-container" class="hidden">
@@ -164,7 +172,7 @@
                         <div class="space-y-4 mb-8">
                             <div class="flex justify-between items-end">
                                 <label class="block text-xs font-bold uppercase text-slate-400">Skill Dice Assignment (Max 5/Skill)</label>
-                                <span class="text-[9px] font-mono uppercase text-slate-400">B: 1pt | R: 2pts | K: -1pt | Upg B->R: 1pt</span>
+                                <span class="text-[9px] font-mono uppercase text-slate-400">Glove/Legs: +1pt/Die | Bat/Arm: +2pts/Die | Upg B->R: 1pt</span>
                             </div>
                             <div id="builder-skills" class="grid grid-cols-1 gap-4"></div>
                         </div>
@@ -180,7 +188,10 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div class="space-y-4">
-                                <label class="block text-xs font-bold uppercase text-slate-400 tracking-widest">Abilities & Intangibles</label>
+                                <div class="flex justify-between items-center">
+                                    <label class="block text-xs font-bold uppercase text-slate-400 tracking-widest">Abilities & Intangibles</label>
+                                    <span id="intangible-limit" class="text-[10px] font-mono font-bold text-slate-500">Limit: 1</span>
+                                </div>
                                 <div id="builder-intangibles" class="grid grid-cols-1 gap-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar"></div>
                             </div>
                             <div class="space-y-4">
@@ -230,7 +241,7 @@
             <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
                 <div class="p-8 bg-slate-50 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <h2 class="text-xl font-black uppercase italic text-slate-900">League Registry</h2>
+                        <h2 class="text-xl font-black uppercase italic text-slate-900">Free Agent Registry</h2>
                         <p class="text-xs text-slate-500 uppercase font-mono">Simulating Diamond League Expansion</p>
                     </div>
                     <div class="flex flex-col items-end gap-3 w-full xl:w-auto">
@@ -256,7 +267,9 @@
                             </div>
                         </div>
                         <div class="flex gap-2 flex-wrap justify-end">
-                            <button onclick="generateRoster()" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl font-black uppercase italic text-xs transition-all shadow-md">Generate 25 Players</button>
+                            <button onclick="generateRoster(25)" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2.5 rounded-xl font-black uppercase italic text-xs transition-all shadow-md">Gen 25</button>
+                            <button onclick="generateRoster(50)" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2.5 rounded-xl font-black uppercase italic text-xs transition-all shadow-md">Gen 50</button>
+                            <button onclick="generateRoster(100)" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2.5 rounded-xl font-black uppercase italic text-xs transition-all shadow-md">Gen 100</button>
                             <button onclick="exportCSV()" id="csv-btn" class="hidden bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl font-black uppercase italic text-xs transition-all">Download CSV</button>
                             <button onclick="batchDownloadLeague()" id="batch-btn" class="hidden bg-purple-600 hover:bg-purple-500 text-white px-5 py-2.5 rounded-xl font-black uppercase italic text-xs transition-all shadow-md flex items-center gap-2">
                                 <span>📦</span> Zip & Download All
@@ -269,7 +282,7 @@
                 <div id="league-progress-container" class="hidden px-8 py-4 bg-white border-b border-slate-100">
                     <div class="flex justify-between items-center text-[10px] font-bold uppercase text-slate-500 mb-2">
                         <span id="league-progress-text">Initializing Neural Matrix...</span>
-                        <span id="league-progress-count" class="text-blue-500 font-black">0 / 25</span>
+                        <span id="league-progress-count" class="text-blue-500 font-black">0 / 0</span>
                     </div>
                     <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden shadow-inner">
                         <div id="league-progress-bar" class="h-full bg-purple-500 transition-all duration-300" style="width: 0%;"></div>
@@ -278,11 +291,12 @@
 
                 <div class="overflow-x-auto max-h-[600px]">
                     <table class="w-full text-left text-sm" id="league-table">
-                        <thead class="bg-slate-900 text-white sticky top-0 uppercase text-[10px] font-mono tracking-widest">
+                        <thead class="bg-slate-900 text-white sticky top-0 uppercase text-[10px] font-mono tracking-widest z-10">
                             <tr>
                                 <th class="p-4">Player (Click to Rename)</th>
                                 <th class="p-4">Exp</th>
                                 <th class="p-4">Pos</th>
+                                <th class="p-4">Hand</th>
                                 <th class="p-4 text-[10px]">Intangibles</th>
                                 <th class="p-4 text-center">Arm</th>
                                 <th class="p-4 text-center">Bat</th>
@@ -294,9 +308,107 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100" id="league-body">
-                            <tr><td colspan="11" class="p-20 text-center text-slate-400 italic font-mono uppercase text-xs">Awaiting Front Office directive...</td></tr>
+                            <tr><td colspan="12" class="p-20 text-center text-slate-400 italic font-mono uppercase text-xs">Awaiting Free Agent directive...</td></tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: THE LEAGUE (FOUNDING TEAMS) -->
+        <section id="tab-active-league" class="tab-content hidden animate-in fade-in duration-300">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+                <div class="p-8 bg-slate-50 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start gap-4">
+                    <div>
+                        <h2 class="text-xl font-black uppercase italic text-slate-900">The League</h2>
+                        <p class="text-xs text-slate-500 uppercase font-mono">Founding Franchises & Active Rosters</p>
+                    </div>
+                    <div class="flex flex-col items-end gap-3 w-full xl:w-auto">
+                        <div class="flex flex-col md:flex-row gap-2 w-full justify-end">
+                            <div class="w-full md:w-48">
+                                <!-- 3-Way Framing Toggle (Founding League) -->
+                                <div class="relative w-full h-10 bg-white rounded-xl p-1 flex select-none overflow-hidden border border-slate-200 shadow-sm">
+                                    <div id="founding-framing-bg" class="absolute top-1 bottom-1 left-1 w-[calc(33.333%-4px)] bg-slate-100 rounded-lg shadow-inner transition-all duration-300 ease-in-out translate-x-0"></div>
+                                    <button onclick="setFraming('portrait')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-blue-600" id="founding-framing-portrait">Portrait</button>
+                                    <button onclick="setFraming('fullbody')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="founding-framing-fullbody">Full Body</button>
+                                    <button onclick="setFraming('action')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="founding-framing-action">Action</button>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-[350px]">
+                                <!-- 4-Way Style Toggle (Founding League) -->
+                                <div class="relative w-full h-10 bg-white rounded-xl p-1 flex select-none overflow-hidden border border-slate-200 shadow-sm">
+                                    <div id="founding-toggle-bg" class="absolute top-1 bottom-1 left-1 w-[calc(25%-4px)] bg-slate-100 rounded-lg shadow-inner transition-all duration-300 ease-in-out translate-x-0"></div>
+                                    <button onclick="setVizStyle('realistic')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-blue-600" id="founding-label-realistic">Realistic</button>
+                                    <button onclick="setVizStyle('anime')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="founding-label-anime">Anime</button>
+                                    <button onclick="setVizStyle('stylized')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="founding-label-stylized">Painterly</button>
+                                    <button onclick="setVizStyle('smb4')" class="relative z-10 flex-1 flex items-center justify-center text-[10px] md:text-xs font-black uppercase italic transition-colors duration-300 text-slate-400" id="founding-label-smb4">SMB4</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 flex-wrap justify-end">
+                            <button onclick="exportFoundingLeagueCSV()" class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl font-black uppercase italic text-xs transition-all shadow-md">
+                                Download CSV
+                            </button>
+                            <button onclick="batchDownloadFoundingLeague()" id="founding-batch-btn" class="bg-purple-600 hover:bg-purple-500 text-white px-5 py-2.5 rounded-xl font-black uppercase italic text-xs transition-all shadow-md flex items-center gap-2">
+                                <span>📦</span> Zip & Download All Teams
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Batch Progress Bar (Founding Teams) -->
+                <div id="founding-progress-container" class="hidden px-8 py-4 bg-white border-b border-slate-100">
+                    <div class="flex justify-between items-center text-[10px] font-bold uppercase text-slate-500 mb-2">
+                        <span id="founding-progress-text">Processing Franchises...</span>
+                        <span id="founding-progress-count" class="text-purple-500 font-black">0 / 60</span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                        <div id="founding-progress-bar" class="h-full bg-purple-500 transition-all duration-300" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div class="p-8">
+                    <!-- Team Selection Cards -->
+                    <div id="founding-teams-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <!-- Injected via JS -->
+                    </div>
+
+                    <!-- Selected Team Roster -->
+                    <div id="founding-roster-container" class="hidden">
+                        <div class="flex justify-between items-end border-b-4 border-slate-900 pb-4 mb-4">
+                            <div>
+                                <h3 id="active-team-name" class="text-2xl font-black uppercase italic text-slate-900 leading-none">Team Name</h3>
+                                <div id="active-team-details" class="text-xs font-bold uppercase text-slate-500 mt-1">15-Man Roster</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Total Payroll</div>
+                                <div id="active-team-payroll" class="text-xl font-black text-green-600 leading-none">$0K</div>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto max-h-[600px] border border-slate-200 rounded-xl shadow-sm">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-900 text-white sticky top-0 uppercase text-[10px] font-mono tracking-widest z-10">
+                                    <tr>
+                                        <th class="p-3">Player</th>
+                                        <th class="p-3">Exp</th>
+                                        <th class="p-3">Pos</th>
+                                        <th class="p-3 text-[10px]">Intangibles</th>
+                                        <th class="p-3 text-center">Arm</th>
+                                        <th class="p-3 text-center">Bat</th>
+                                        <th class="p-3 text-center">Glove</th>
+                                        <th class="p-3 text-center">Legs</th>
+                                        <th class="p-3 text-center text-red-400">Fat</th>
+                                        <th class="p-3 text-right">Salary</th>
+                                        <th class="p-3 text-center">Viz</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100" id="founding-roster-body">
+                                    <!-- Injected via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -436,22 +548,22 @@
         const POSITION_LIST = ['P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF'];
         
         const INTANGIBLES_DATA = [
-            { name: "Flash", cost: 3, sal: 3, desc: "May re-roll any dice during a Legs Skill Test." },
-            { name: "Clutch Performer", cost: 3, sal: 3, desc: "Balls count as hits in Overtime or trailing in 6th/7th innings." },
-            { name: "Iron Grip", cost: 2, sal: 2, desc: "Ignore the first Error (E) rolled in a Glove Skill Test." },
-            { name: "Heavy Hitter", cost: 4, sal: 4, desc: "+1 Hit when rolling more Red Dice than Blue Dice during an At Bat." },
-            { name: "Durable", cost: 2, sal: 2, desc: "Reduce Fatigue dice by 1." },
-            { name: "Flame Thrower", cost: 5, sal: 5, desc: "+1 Hit when Red Dice > Blue Dice when pitching during an At Bat." },
-            { name: "Switch Hitter", cost: 3, sal: 3, desc: "May choose hitting side; re-roll one die facing opposite arm." },
-            { name: "Utility Player", cost: 5, sal: 5, desc: "Player may have two fielding positions." },
-            { name: "Infielder", cost: 4, sal: 4, desc: "Player may play First, Second, Shortstop or Third base." },
-            { name: "Outfielder", cost: 4, sal: 4, desc: "Player may play any position in the Outfield." },
-            { name: "Master of the Corners", cost: 5, sal: 5, desc: "Pitcher wins ties during At Bats." },
-            { name: "Shut Down Player", cost: 6, sal: 6, desc: "Earn Spectacular Play tokens via three Strikeouts in an inning." },
-            { name: "Spray Hitter", cost: 4, sal: 4, desc: "Add or subtract 1 from the Spray Die on a hit." },
-            { name: "Rocket Arm", cost: 7, sal: 7, desc: "+1 Red Die on throws to catch a runner." },
-            { name: "Quick Feet", cost: 8, sal: 8, desc: "Move an additional half segment when attempting to field." },
-            { name: "Intimidating", cost: 7, sal: 7, desc: "Facing opponent must re-roll successes (unless also Intimidating)." }
+            { name: "Flash", cost: 3, desc: "Player may re-roll any dice during a Legs Skill Test" },
+            { name: "Clutch Performer", cost: 3, desc: "Balls count as hits when in Overtime or down going into 6th/7th innings" },
+            { name: "Iron Grip", cost: 2, desc: "Ignore the first Error(E) rolled in a Glove Skill Test" },
+            { name: "Heavy Hitter", cost: 4, desc: "+1 Hit when rolling more Red Dice than Blue Dice during an At Bat" },
+            { name: "Durable", cost: 2, desc: "Reduce Fatigue dice by 1" },
+            { name: "Flame Thrower", cost: 5, desc: "+1 Hit when rolling more Red Dice than Blue Dice when pitching during an at bat" },
+            { name: "Switch Hitter", cost: 3, desc: "May choose side of plate. May re-roll one die when facing pitcher using opposite arm." },
+            { name: "Utility Player", cost: 5, desc: "Player may have two fielding positions" },
+            { name: "Infielder", cost: 4, desc: "Player may play First, Second, Shortstop or Third base" },
+            { name: "Outfielder", cost: 4, desc: "Player may play any position in the Outfield" },
+            { name: "Master of the Corners", cost: 5, desc: "Pitcher wins ties during At Bats" },
+            { name: "Shut Down Player", cost: 6, desc: "3 strike outs = Spectacular Play token. End inning with Spectacular Play = 2 Tokens." },
+            { name: "Spray Hitter", cost: 4, desc: "Add or subtract 1 from the Spray Die when this player gets a hit." },
+            { name: "Rocket Arm", cost: 7, desc: "When attempting to throw out a runner add an additional Red Die to the Skill or Opposed Roll." },
+            { name: "Quick Feet", cost: 8, desc: "May move an additional half segment when attempting to field a ball." },
+            { name: "Intimidating", cost: 7, desc: "Opposing player must re-roll successes. If both Intimidating, neither re-rolls." }
         ];
 
         const NAME_LIB = {
@@ -727,6 +839,10 @@
         ];
 
         const TEAM_COLORS = [
+            'Kelly Green, Athletic Gold, White',
+            'Slate Grey, Midnight Navy, Burnt Orange',
+            'Teal, Sea Green, Burnt Orange',
+            'Slate Grey, Crimson Red, Athletic Gold',
             'Neon Green, Swamp Brown, Orange',
             'Flannel Red, Pine Green, Wood Brown',
             'Neon Purple, Lime Green, Black',
@@ -740,16 +856,23 @@
             'Electric Blue, Neon Orange, Charcoal',
             'Bubblegum Pink, Cyan, Yellow',
             'Midnight Blue, Copper, White',
-            'Kelly Green, Athletic Gold, White',
             'Lavender, Obsidian, Silver',
             'Burnt Orange, Desert Sand, Turquoise',
             'Hot Pink, Mint Green, Black'
         ];
 
+        // --- NEW: FOUNDING TEAMS DATA ---
+        const FOUNDING_TEAMS = [
+            { id: 'louisville', region: 'american', city: 'Louisville', name: 'Phantoms', colors: ['#16a34a', '#eab308', '#ffffff'], colorString: 'Kelly Green, Athletic Gold, White', mascot: 'spooky glowing ghost wearing a vintage baseball cap', logo: 'Phantoms.jpg' },
+            { id: 'hiroshima', region: 'japanese', city: 'Hiroshima', name: 'Jaguars', colors: ['#94a3b8', '#0f172a', '#f97316'], colorString: 'Slate Grey, Midnight Navy, Burnt Orange', mascot: 'fierce jungle jaguar leaping out of the shadows with a bat', logo: 'Jaguars.jpg' },
+            { id: 'guadalajara', region: 'latin', city: 'Guadalajara', name: 'Waves', colors: ['#14b8a6', '#22c55e', '#f97316'], colorString: 'Teal, Sea Green, Burnt Orange', mascot: 'angry tidal wave crashing down holding a baseball', logo: 'Waves.jpg' },
+            { id: 'vienna', region: 'european', city: 'Vienna', name: 'Vipers', colors: ['#64748b', '#dc2626', '#f59e0b'], colorString: 'Slate Grey, Crimson Red, Athletic Gold', mascot: 'coiled venomous snake wrapped around a baseball bat', logo: 'vipers.jpg' }
+        ];
+
         // --- GLOBAL STATE ---
         let builderState = {
             name: "", exp: "Rookie", isStar: false,
-            pos1: "P", pos2: "", origin: "american", gender: "male",
+            pos1: "P", pos2: "", hand: "Righty", origin: "american", gender: "male",
             physicalSubtype: "African American",
             background: "",
             expression: "",
@@ -769,15 +892,19 @@
         let currentVizStyle = 'realistic';
         let currentFraming = 'portrait';
         let generatedLeague = [];
+        let foundingLeagueRosters = {};
+        let activeFoundingTeamId = null;
 
         // --- CORE FUNCTIONS ---
         function switchTab(targetId) {
             document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('nav-active', b.dataset.target === targetId));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('hidden', c.id !== targetId));
             
-            // If switching to teams tab, render it if empty
             if(targetId === 'tab-teams' && document.getElementById('teams-grid').children.length === 0) {
                 renderTeamsTab();
+            }
+            if(targetId === 'tab-active-league' && Object.keys(foundingLeagueRosters).length === 0) {
+                initFoundingLeague();
             }
         }
 
@@ -785,9 +912,9 @@
             btn.onclick = () => switchTab(btn.dataset.target);
         });
 
-        function getRandomNameAndOrigin() {
+        function getRandomNameAndOrigin(forcedRegion = null) {
             const regions = Object.keys(NAME_LIB);
-            const r = regions[Math.floor(Math.random() * regions.length)];
+            const r = forcedRegion || regions[Math.floor(Math.random() * regions.length)];
             const gender = Math.random() < 0.5 ? 'male' : 'female';
             const fList = gender === 'male' ? NAME_LIB[r].m : NAME_LIB[r].f;
             const lList = NAME_LIB[r].l;
@@ -904,6 +1031,19 @@
             builderState.name = document.getElementById('builder-name').value;
             builderState.pos1 = document.getElementById('builder-pos-1').value;
             
+            const handSelect = document.getElementById('builder-hand');
+            const hasSwitch = builderState.intangibles.some(i => i.name === "Switch Hitter");
+            
+            if (hasSwitch) {
+                handSelect.disabled = true;
+                handSelect.classList.add('opacity-50', 'cursor-not-allowed');
+                builderState.hand = "Switch";
+            } else {
+                handSelect.disabled = false;
+                handSelect.classList.remove('opacity-50', 'cursor-not-allowed');
+                builderState.hand = handSelect.value;
+            }
+
             const hasUtility = builderState.intangibles.some(i => i.name === "Utility Player");
             const pos2Container = document.getElementById('secondary-pos-container');
             if (hasUtility) {
@@ -917,9 +1057,16 @@
             let ptsLimit = (builderState.exp === 'Rookie' ? 10 : builderState.exp === 'Journeyman' ? 15 : 20) + (builderState.isStar ? 10 : 0);
             let salaryBase = (builderState.exp === 'Rookie' ? 10 : builderState.exp === 'Journeyman' ? 20 : 40) + (builderState.isStar ? 20 : 0);
 
+            // New Math Logic
             let ptsUsed = builderState.intangibles.reduce((acc, i) => acc + i.cost, 0);
-            Object.values(builderState.skills).forEach(s => {
-                ptsUsed += (s.b * 1 + s.r * 2 + s.k * -1) - 2;
+            Object.entries(builderState.skills).forEach(([sName, s]) => {
+                const addedDice = (s.b + s.r + s.k) - 2;
+                if (sName === 'Bat' || sName === 'Arm') {
+                    ptsUsed += addedDice * 2; // Bat/Arm costs 2pts per die added
+                } else {
+                    ptsUsed += addedDice * 1; // Glove/Legs costs 1pt per die added
+                }
+                ptsUsed += s.r * 1; // Upgrading to Red always costs 1pt
             });
 
             const skillContainer = document.getElementById('builder-skills');
@@ -929,35 +1076,58 @@
             SKILLS.forEach(sName => {
                 const s = builderState.skills[sName];
                 totalRed += s.r;
+                const isBatArm = sName === 'Bat' || sName === 'Arm';
+                
+                let diceDisplay = '';
+                if (isBatArm) {
+                    diceDisplay = Array(s.b).fill('<div class="die-icon bg-slate-200 border border-slate-300 text-slate-800 shadow-sm font-black">D</div>').join('');
+                } else {
+                    diceDisplay = Array(s.b).fill('<div class="die-icon bg-dlb-blue">B</div>').join('') +
+                                  Array(s.r).fill('<div class="die-icon bg-dlb-red">R</div>').join('') +
+                                  Array(s.k).fill('<div class="die-icon bg-dlb-black">K</div>').join('');
+                }
+
+                let controlsDisplay = '';
+                if (isBatArm) {
+                    controlsDisplay = `
+                        <div class="flex gap-2 w-full mt-2">
+                            <button onclick="adjustSkill('${sName}','b',1)" class="flex-1 py-1.5 flex items-center justify-center bg-slate-100 border border-slate-300 rounded-lg font-bold text-[10px] text-slate-700 hover:bg-slate-200 transition-colors">+ ADD DIE (2pt)</button>
+                            <button onclick="adjustSkill('${sName}','b',-1)" class="flex-1 py-1.5 flex items-center justify-center bg-slate-100 border border-slate-300 rounded-lg font-bold text-[10px] text-slate-700 hover:bg-slate-200 transition-colors">- REMOVE</button>
+                        </div>
+                    `;
+                } else {
+                    controlsDisplay = `
+                        <div class="flex gap-2 justify-between mt-2">
+                            <div class="flex gap-1">
+                                <button onclick="adjustSkill('${sName}','b',1)" class="w-8 h-8 flex items-center justify-center bg-white border rounded font-bold text-[10px] text-blue-500">B+</button>
+                                <button onclick="adjustSkill('${sName}','b',-1)" class="w-8 h-8 flex items-center justify-center bg-white border rounded font-bold text-[10px]">-</button>
+                            </div>
+                            <div class="flex gap-1">
+                                <button onclick="adjustSkill('${sName}','r',1)" class="w-8 h-8 flex items-center justify-center bg-red-50 border border-red-200 rounded font-bold text-[10px] text-red-500">R+</button>
+                                <button onclick="upgradeToRed('${sName}')" class="w-8 h-8 flex items-center justify-center bg-orange-50 border border-orange-200 rounded font-bold text-[10px] text-orange-500">↑R</button>
+                                <button onclick="adjustSkill('${sName}','r',-1)" class="w-8 h-8 flex items-center justify-center bg-red-50 border border-red-200 rounded font-bold text-[10px]">-</button>
+                            </div>
+                            <div class="flex gap-1">
+                                <button onclick="adjustSkill('${sName}','k',1)" class="w-8 h-8 flex items-center justify-center bg-black border border-black rounded font-bold text-[10px] text-white">K+</button>
+                                <button onclick="adjustSkill('${sName}','k',-1)" class="w-8 h-8 flex items-center justify-center bg-slate-200 border border-slate-300 rounded font-bold text-[10px] text-slate-600">-</button>
+                            </div>
+                        </div>
+                    `;
+                }
+
                 const div = document.createElement('div');
                 div.className = "flex flex-col p-4 bg-slate-50 rounded-2xl border border-slate-100";
                 div.innerHTML = `
                     <div class="flex justify-between items-center mb-2">
                         <div>
-                            <div class="text-[10px] font-bold uppercase text-slate-400">${sName}</div>
+                            <div class="text-[10px] font-bold uppercase text-slate-400">${sName} ${isBatArm ? '(Capacity)' : ''}</div>
                             <div class="flex mt-1">
-                                ${Array(s.b).fill('<div class="die-icon bg-dlb-blue">B</div>').join('')}
-                                ${Array(s.r).fill('<div class="die-icon bg-dlb-red">R</div>').join('')}
-                                ${Array(s.k).fill('<div class="die-icon bg-dlb-black">K</div>').join('')}
+                                ${diceDisplay}
                             </div>
                         </div>
                         <div class="text-[9px] font-bold text-slate-300 italic uppercase">Pool: ${s.b + s.r + s.k}/5</div>
                     </div>
-                    <div class="flex gap-2 justify-between mt-2">
-                        <div class="flex gap-1">
-                            <button onclick="adjustSkill('${sName}','b',1)" class="w-8 h-8 flex items-center justify-center bg-white border rounded font-bold text-[10px] text-blue-500">B+</button>
-                            <button onclick="adjustSkill('${sName}','b',-1)" class="w-8 h-8 flex items-center justify-center bg-white border rounded font-bold text-[10px]">-</button>
-                        </div>
-                        <div class="flex gap-1">
-                            <button onclick="adjustSkill('${sName}','r',1)" class="w-8 h-8 flex items-center justify-center bg-red-50 border border-red-200 rounded font-bold text-[10px] text-red-500">R+</button>
-                            <button onclick="upgradeToRed('${sName}')" class="w-8 h-8 flex items-center justify-center bg-orange-50 border border-orange-200 rounded font-bold text-[10px] text-orange-500">↑R</button>
-                            <button onclick="adjustSkill('${sName}','r',-1)" class="w-8 h-8 flex items-center justify-center bg-red-50 border border-red-200 rounded font-bold text-[10px]">-</button>
-                        </div>
-                        <div class="flex gap-1">
-                            <button onclick="adjustSkill('${sName}','k',1)" class="w-8 h-8 flex items-center justify-center bg-black border border-black rounded font-bold text-[10px] text-white">K+</button>
-                            <button onclick="adjustSkill('${sName}','k',-1)" class="w-8 h-8 flex items-center justify-center bg-slate-200 border border-slate-300 rounded font-bold text-[10px] text-slate-600">-</button>
-                        </div>
-                    </div>`;
+                    ${controlsDisplay}`;
                 skillContainer.appendChild(div);
             });
 
@@ -978,10 +1148,11 @@
             let currentSalary = salaryBase;
             Object.values(builderState.skills).forEach(s => {
                 currentSalary += (s.r * 5); 
-                if(s.b + s.r + s.k >= 5) currentSalary += 5; 
+                if(s.b + s.r + s.k > 3) currentSalary += 5; // Updated logic: > 3 dice
+                currentSalary -= (s.k * 1); // Updated logic: -1K per Black Die
             });
-            builderState.intangibles.forEach(i => currentSalary += (i.sal || 0));
-            currentSalary -= fatigueCount; 
+            // Updated logic: Intangibles point cost goes directly to salary
+            builderState.intangibles.forEach(i => currentSalary += i.cost);
 
             document.getElementById('builder-points').innerText = `${ptsUsed} / ${ptsLimit} PTS`;
             document.getElementById('builder-points').className = ptsUsed > ptsLimit ? 'text-4xl font-black text-red-500' : 'text-4xl font-black';
@@ -989,6 +1160,11 @@
 
             const iList = document.getElementById('builder-intangibles');
             iList.innerHTML = '';
+            
+            const iLimit = (builderState.exp === 'Rookie' ? 1 : builderState.exp === 'Journeyman' ? 2 : 4) + (builderState.isStar ? 1 : 0);
+            document.getElementById('intangible-limit').innerText = `Limit: ${builderState.intangibles.length} / ${iLimit}`;
+            document.getElementById('intangible-limit').className = builderState.intangibles.length > iLimit ? 'text-[10px] font-mono font-bold text-red-500' : 'text-[10px] font-mono font-bold text-slate-500';
+
             INTANGIBLES_DATA.forEach((item, idx) => {
                 const active = builderState.intangibles.some(i => i.name === item.name);
                 const btn = document.createElement('button');
@@ -1011,6 +1187,7 @@
                 if (type === 'k' && s.k >= 2) return; 
             } else {
                 if (s[type] <= 0) return;
+                if ((s.b + s.r + s.k) <= 2) return; // Prevent removing below starting 2 dice
             }
             s[type] += delta;
             updateBuilderUI();
@@ -1036,7 +1213,7 @@
         function resetBuilder() {
             builderState = {
                 name: "", exp: "Rookie", isStar: false,
-                pos1: "P", pos2: "", origin: "american", gender: "male",
+                pos1: "P", pos2: "", hand: "Righty", origin: "american", gender: "male",
                 physicalSubtype: "African American",
                 background: "",
                 expression: "",
@@ -1057,6 +1234,7 @@
             document.getElementById('builder-exp').value = "Rookie";
             document.getElementById('builder-star').checked = false;
             document.getElementById('builder-pos-1').value = "P";
+            document.getElementById('builder-hand').value = "Righty";
             document.getElementById('builder-pos-2').value = "";
             updateBuilderUI();
             renderSprayChart();
@@ -1072,18 +1250,31 @@
         }
 
         // --- LEAGUE LOGIC ---
-        function generateRoster() {
+        function generateRoster(count = 25) {
             generatedLeague = [];
-            for (let i = 0; i < 25; i++) {
+            for (let i = 0; i < count; i++) {
                 const res = getRandomNameAndOrigin();
                 const roll = Math.random();
                 let exp = roll < 0.5 ? 'Rookie' : roll < 0.85 ? 'Journeyman' : 'Veteran';
-                const isStar = Math.random() < 0.1;
+                const isStar = Math.random() < 0.25; // Adjusted to 25% chance
                 
+                let ptsLimit = (exp === 'Rookie' ? 10 : exp === 'Journeyman' ? 15 : 20) + (isStar ? 10 : 0);
+                let rem = ptsLimit;
+
                 const iLimit = (exp === 'Rookie' ? 1 : exp === 'Journeyman' ? 2 : 4) + (isStar ? 1 : 0);
                 const pool = [...INTANGIBLES_DATA].sort(() => 0.5 - Math.random());
-                const selectedIntangibles = pool.slice(0, iLimit);
+                const selectedIntangibles = [];
+
+                for(let j = 0; j < iLimit; j++) {
+                    if(pool[j] && rem >= pool[j].cost) {
+                        selectedIntangibles.push(pool[j]);
+                        rem -= pool[j].cost;
+                    }
+                }
+
                 const hasUtility = selectedIntangibles.some(i => i.name === "Utility Player");
+                const hasSwitch = selectedIntangibles.some(i => i.name === "Switch Hitter");
+                const handDisplay = hasSwitch ? "Switch" : (Math.random() > 0.85 ? "Lefty" : "Righty");
                 const intangibleNames = selectedIntangibles.map(i => i.name).join(", ");
 
                 let p1 = POSITION_LIST[Math.floor(Math.random() * POSITION_LIST.length)];
@@ -1095,20 +1286,37 @@
                 }
                 
                 const skills = {Arm:{b:2,r:0,k:0}, Bat:{b:2,r:0,k:0}, Glove:{b:2,r:0,k:0}, Legs:{b:2,r:0,k:0}};
-                const skillPool = (exp === 'Rookie' ? 5 : exp === 'Journeyman' ? 8 : 12) + (isStar ? 6 : 0);
-                let rem = skillPool;
                 let redDice = 0;
+                let availableUpgrades = 20;
                 
-                while (rem > 0) {
+                while (rem > 0 && availableUpgrades > 0) {
                     const keys = Object.keys(skills);
                     const k = keys[Math.floor(Math.random()*4)];
                     const s = skills[k];
+                    const isBatArm = k === 'Bat' || k === 'Arm';
+                    
                     if (s.b + s.r + s.k < 5) {
-                        const rAction = Math.random();
-                        if (rAction > 0.6) { s.b++; rem--; }
-                        else if (rAction > 0.2) { s.r++; rem -= 2; redDice++; }
-                        else { s.k++; rem += 1; }
-                    } else break;
+                        if (isBatArm) {
+                            if (rem >= 2) { 
+                                s.b++; 
+                                rem -= 2; 
+                            }
+                        } else {
+                            const rAction = Math.random();
+                            if (rAction > 0.6) { 
+                                if (rem >= 1) { s.b++; rem -= 1; }
+                            } else if (rAction > 0.2) { 
+                                if (s.b > 0) { 
+                                    if (rem >= 1) { s.b--; s.r++; rem -= 1; redDice++; }
+                                } else {
+                                    if (rem >= 2) { s.r++; rem -= 2; redDice++; }
+                                }
+                            } else { 
+                                if (rem >= 1 && s.k < 2) { s.k++; rem -= 1; }
+                            }
+                        }
+                    }
+                    availableUpgrades--;
                 }
 
                 let fatigue = 0;
@@ -1118,12 +1326,16 @@
                 if (selectedIntangibles.some(i => i.name === "Durable")) fatigue = Math.max(0, fatigue - 1);
 
                 let sal = (exp === 'Rookie' ? 10 : exp === 'Journeyman' ? 20 : 40) + (isStar ? 20 : 0);
-                sal += (redDice * 5) - fatigue;
-                selectedIntangibles.forEach(i => sal += (i.sal || 0));
+                Object.values(skills).forEach(s => { 
+                    sal += s.r * 5;
+                    if ((s.b + s.r + s.k) > 3) sal += 5; // Updated logic > 3
+                    sal -= s.k * 1; // Updated logic -1K per Black Die
+                });
+                selectedIntangibles.forEach(i => sal += i.cost); // Updated logic +xK for intangibles
 
                 generatedLeague.push({ 
                     name: res.name + (isStar ? ' ★' : ''), 
-                    exp, pos: posDisplay, skills, sal, isStar, fatigue, redDice, 
+                    exp, pos: posDisplay, hand: handDisplay, skills, sal, isStar, fatigue, redDice, 
                     intangibles: intangibleNames,
                     origin: res.origin,
                     gender: res.gender,
@@ -1175,9 +1387,10 @@
                     <td class="p-4 font-black italic uppercase cursor-pointer hover:text-blue-500 transition-colors" onclick="renamePlayer(${idx})">${p.name}</td>
                     <td class="p-4 text-xs font-mono text-slate-500">${p.exp}</td>
                     <td class="p-4 font-bold text-blue-600">${p.pos}</td>
+                    <td class="p-4 font-bold text-slate-600">${p.hand}</td>
                     <td class="p-4 text-[9px] text-slate-500 italic max-w-[150px] truncate" title="${p.intangibles}">${p.intangibles}</td>
-                    <td class="p-4 text-center font-mono font-bold">${p.skills.Arm.b}B/${p.skills.Arm.r}R</td>
-                    <td class="p-4 text-center font-mono font-bold">${p.skills.Bat.b}B/${p.skills.Bat.r}R</td>
+                    <td class="p-4 text-center font-mono font-bold">${p.skills.Arm.b} DICE</td>
+                    <td class="p-4 text-center font-mono font-bold">${p.skills.Bat.b} DICE</td>
                     <td class="p-4 text-center font-mono font-bold">${p.skills.Glove.b}B/${p.skills.Glove.r}R</td>
                     <td class="p-4 text-center font-mono font-bold">${p.skills.Legs.b}B/${p.skills.Legs.r}R</td>
                     <td class="p-4 text-center font-mono font-black text-red-500">${p.fatigue}</td>
@@ -1217,9 +1430,9 @@
         }
 
         function getCSVString() {
-            let csv = "Name,Exp,Pos,Intangibles,Salary,Arm,Bat,Glove,Legs,Fatigue,Gender,Subtype,Background,BodyShape,UniformColor,HairStyle\n";
+            let csv = "Name,Exp,Pos,Hand,Intangibles,Salary,Arm,Bat,Glove,Legs,Fatigue,Gender,Subtype,Background,BodyShape,UniformColor,HairStyle\n";
             generatedLeague.forEach(p => {
-                csv += `"${p.name}","${p.exp}","${p.pos}","${p.intangibles}","${p.sal}","${p.skills.Arm.b}B${p.skills.Arm.r}R","${p.skills.Bat.b}B${p.skills.Bat.r}R","${p.skills.Glove.b}B${p.skills.Glove.r}R","${p.skills.Legs.b}B${p.skills.Legs.r}R","${p.fatigue}","${p.gender}","${p.physicalSubtype}","${p.background}","${p.bodyShape}","${p.uniformColor}","${p.hairStyle}"\n`;
+                csv += `"${p.name}","${p.exp}","${p.pos}","${p.hand}","${p.intangibles}","${p.sal}","${p.skills.Arm.b} DICE","${p.skills.Bat.b} DICE","${p.skills.Glove.b}B${p.skills.Glove.r}R","${p.skills.Legs.b}B${p.skills.Legs.r}R","${p.fatigue}","${p.gender}","${p.physicalSubtype}","${p.background}","${p.bodyShape}","${p.uniformColor}","${p.hairStyle}"\n`;
             });
             return csv;
         }
@@ -1228,6 +1441,352 @@
             const csv = getCSVString();
             const blob = new Blob([csv], { type: 'text/csv' });
             saveAs(blob, "DLB_League_Roster.csv");
+        }
+
+        // --- THE LEAGUE (FOUNDING TEAMS) LOGIC ---
+        function initFoundingLeague() {
+            const requiredPositions = ['P', 'P', 'P', 'P', 'C', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'Utility', 'Utility'];
+
+            FOUNDING_TEAMS.forEach(team => {
+                foundingLeagueRosters[team.id] = [];
+                // Generate a 15-man roster
+                for (let i = 0; i < 15; i++) {
+                    const res = getRandomNameAndOrigin(team.region); // Force region to match team
+                    const roll = Math.random();
+                    let exp = roll < 0.4 ? 'Rookie' : roll < 0.8 ? 'Journeyman' : 'Veteran';
+                    const isStar = Math.random() < 0.25; // Adjusted to 25% chance
+                    
+                    let ptsLimit = (exp === 'Rookie' ? 10 : exp === 'Journeyman' ? 15 : 20) + (isStar ? 10 : 0);
+                    let rem = ptsLimit;
+
+                    let posDisplay = requiredPositions[i];
+                    const iLimit = (exp === 'Rookie' ? 1 : exp === 'Journeyman' ? 2 : 4) + (isStar ? 1 : 0);
+                    const pool = [...INTANGIBLES_DATA].sort(() => 0.5 - Math.random());
+                    const selectedIntangibles = [];
+
+                    // If they are Utility, force the Utility intangible
+                    if (posDisplay === 'Utility') {
+                        const utilData = INTANGIBLES_DATA.find(x => x.name === "Utility Player");
+                        if (rem >= utilData.cost) {
+                            selectedIntangibles.push(utilData);
+                            rem -= utilData.cost;
+                            let p1 = POSITION_LIST[Math.floor(Math.random() * POSITION_LIST.length)];
+                            let p2; do { p2 = POSITION_LIST[Math.floor(Math.random() * POSITION_LIST.length)]; } while (p2 === p1);
+                            posDisplay = `${p1}/${p2}`;
+                        } else {
+                            posDisplay = POSITION_LIST[Math.floor(Math.random() * POSITION_LIST.length)];
+                        }
+                    }
+
+                    for(let j = 0; j < iLimit && selectedIntangibles.length < iLimit; j++) {
+                        if(pool[j] && pool[j].name !== "Utility Player" && rem >= pool[j].cost) {
+                            selectedIntangibles.push(pool[j]);
+                            rem -= pool[j].cost;
+                        }
+                    }
+
+                    const hasSwitch = selectedIntangibles.some(i => i.name === "Switch Hitter");
+                    const handDisplay = hasSwitch ? "Switch" : (Math.random() > 0.85 ? "Lefty" : "Righty");
+                    const intangibleNames = selectedIntangibles.map(i => i.name).join(", ");
+
+                    const skills = {Arm:{b:2,r:0,k:0}, Bat:{b:2,r:0,k:0}, Glove:{b:2,r:0,k:0}, Legs:{b:2,r:0,k:0}};
+                    let redDice = 0;
+                    let availableUpgrades = 20;
+                    
+                    // Bias skill generation slightly based on position
+                    while (rem > 0 && availableUpgrades > 0) {
+                        const keys = Object.keys(skills);
+                        // Pitchers bias towards Arm, Batters bias towards Bat/Glove
+                        let k;
+                        if (posDisplay.includes('P') && Math.random() < 0.5) k = 'Arm';
+                        else if (!posDisplay.includes('P') && Math.random() < 0.4) k = 'Bat';
+                        else k = keys[Math.floor(Math.random()*4)];
+                        
+                        const s = skills[k];
+                        const isBatArm = k === 'Bat' || k === 'Arm';
+                        
+                        if (s.b + s.r + s.k < 5) {
+                            if (isBatArm) {
+                                if (rem >= 2) { s.b++; rem -= 2; }
+                            } else {
+                                const rAction = Math.random();
+                                if (rAction > 0.6) { 
+                                    if (rem >= 1) { s.b++; rem -= 1; }
+                                } else if (rAction > 0.2) { 
+                                    if (s.b > 0) { 
+                                        if (rem >= 1) { s.b--; s.r++; rem -= 1; redDice++; }
+                                    } else {
+                                        if (rem >= 2) { s.r++; rem -= 2; redDice++; }
+                                    }
+                                } else { 
+                                    if (rem >= 1 && s.k < 2) { s.k++; rem -= 1; }
+                                }
+                            }
+                        }
+                        availableUpgrades--;
+                    }
+
+                    let fatigue = 0;
+                    if (exp === 'Rookie') fatigue = redDice;
+                    else if (exp === 'Journeyman') fatigue = Math.floor(redDice / 2);
+                    else if (exp === 'Veteran') fatigue = Math.floor(redDice / 3);
+                    if (selectedIntangibles.some(i => i.name === "Durable")) fatigue = Math.max(0, fatigue - 1);
+
+                    let sal = (exp === 'Rookie' ? 10 : exp === 'Journeyman' ? 20 : 40) + (isStar ? 20 : 0);
+                    Object.values(skills).forEach(s => { 
+                        sal += s.r * 5;
+                        if ((s.b + s.r + s.k) > 3) sal += 5;
+                        sal -= s.k * 1;
+                    });
+                    selectedIntangibles.forEach(i => sal += i.cost);
+
+                    foundingLeagueRosters[team.id].push({ 
+                        name: res.name + (isStar ? ' ★' : ''), 
+                        exp, pos: posDisplay, hand: handDisplay, skills, sal, isStar, fatigue, redDice, 
+                        intangibles: intangibleNames,
+                        origin: res.origin,
+                        gender: res.gender,
+                        physicalSubtype: res.physicalSubtype,
+                        background: res.background,
+                        expression: res.expression,
+                        cameraAngle: res.cameraAngle,
+                        flavor: res.flavor,
+                        bodyShape: res.bodyShape,
+                        uniformColor: team.colorString, // Force team uniform
+                        eyewear: res.eyewear,
+                        wristwear: res.wristwear,
+                        tattoos: res.tattoos,
+                        equipment: res.equipment,
+                        hairStyle: res.hairStyle
+                    });
+                }
+            });
+
+            renderFoundingTeamCards();
+        }
+
+        function renderFoundingTeamCards() {
+            const grid = document.getElementById('founding-teams-grid');
+            grid.innerHTML = '';
+
+            FOUNDING_TEAMS.forEach(team => {
+                const totalPayroll = foundingLeagueRosters[team.id].reduce((sum, p) => sum + p.sal, 0);
+                
+                const card = document.createElement('div');
+                card.className = "bg-white border-2 border-slate-100 rounded-2xl overflow-hidden cursor-pointer hover:border-blue-500 hover:shadow-lg transition-all group flex flex-col";
+                card.onclick = () => selectFoundingTeam(team.id);
+                
+                // Active state styling
+                if(activeFoundingTeamId === team.id) {
+                    card.classList.add('border-blue-500', 'ring-4', 'ring-blue-100');
+                }
+
+                card.innerHTML = `
+                    <div class="h-2 w-full flex">
+                        <div class="h-full flex-1" style="background-color: ${team.colors[0]}"></div>
+                        <div class="h-full flex-1" style="background-color: ${team.colors[1]}"></div>
+                        <div class="h-full flex-1" style="background-color: ${team.colors[2]}"></div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col">
+                        <div class="mb-4">
+                            <div class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">${team.region} Region</div>
+                            <div class="text-xl font-black italic text-slate-900 leading-tight">${team.city}</div>
+                            <div class="text-2xl font-black italic uppercase leading-none" style="color: ${team.colors[0]}">${team.name}</div>
+                        </div>
+
+                        <div class="aspect-square bg-slate-900 rounded-xl border border-slate-800 overflow-hidden relative mb-4 flex items-center justify-center shadow-inner w-full p-6">
+                            <!-- Image tries to load first. If it fails, the onerror script hides it and reveals the fallback monogram -->
+                            <img src="${team.logo}" alt="${team.city} ${team.name} Logo" 
+                                 class="w-full h-full object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-300 z-10" 
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                            
+                            <!-- Fallback Monogram (Hidden by default) -->
+                            <div class="absolute inset-0 items-center justify-center hidden" style="background: linear-gradient(135deg, ${team.colors[0]}22, ${team.colors[1]}22)">
+                                <div class="w-20 h-20 rounded-full flex items-center justify-center text-white font-black text-3xl shadow-lg border-4 border-white" style="background: linear-gradient(135deg, ${team.colors[0]}, ${team.colors[1]})">
+                                    ${team.city.charAt(0)}${team.name.charAt(0)}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-end border-t border-slate-100 pt-4 mt-auto">
+                            <div>
+                                <div class="text-[10px] font-bold text-slate-400 uppercase">Roster</div>
+                                <div class="text-sm font-bold text-slate-700">15 Players</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-[10px] font-bold text-slate-400 uppercase">Payroll</div>
+                                <div class="text-sm font-black text-green-600">$${totalPayroll}K</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function selectFoundingTeam(teamId) {
+            activeFoundingTeamId = teamId;
+            renderFoundingTeamCards(); // Update active highlights
+            
+            const team = FOUNDING_TEAMS.find(t => t.id === teamId);
+            const roster = foundingLeagueRosters[teamId];
+            const totalPayroll = roster.reduce((sum, p) => sum + p.sal, 0);
+
+            document.getElementById('founding-roster-container').classList.remove('hidden');
+            document.getElementById('active-team-name').innerText = `${team.city} ${team.name}`;
+            document.getElementById('active-team-name').style.color = team.colors[0];
+            document.getElementById('active-team-payroll').innerText = `$${totalPayroll}K`;
+
+            const body = document.getElementById('founding-roster-body');
+            body.innerHTML = '';
+            
+            roster.forEach((p, idx) => {
+                const tr = document.createElement('tr');
+                if (p.isStar) tr.className = "bg-yellow-50 hover:bg-yellow-100 transition-colors";
+                else tr.className = "hover:bg-slate-50 transition-colors";
+                
+                tr.innerHTML = `
+                    <td class="p-3 font-black italic uppercase text-slate-900">${p.name}</td>
+                    <td class="p-3 text-xs font-mono text-slate-500">${p.exp}</td>
+                    <td class="p-3 font-bold text-blue-600">${p.pos}</td>
+                    <td class="p-3 text-[9px] text-slate-500 italic max-w-[120px] truncate" title="${p.intangibles}">${p.intangibles || '-'}</td>
+                    <td class="p-3 text-center font-mono font-bold">${p.skills.Arm.b}D</td>
+                    <td class="p-3 text-center font-mono font-bold">${p.skills.Bat.b}D</td>
+                    <td class="p-3 text-center font-mono font-bold">${p.skills.Glove.b}B/${p.skills.Glove.r}R</td>
+                    <td class="p-3 text-center font-mono font-bold">${p.skills.Legs.b}B/${p.skills.Legs.r}R</td>
+                    <td class="p-3 text-center font-mono font-black text-red-500">${p.fatigue}</td>
+                    <td class="p-3 text-right font-black text-green-600">$${p.sal}K</td>
+                    <td class="p-3 text-center">
+                        <button onclick="visualizeFromFoundingLeague('${teamId}', ${idx})" class="text-xl hover:scale-125 transition-transform" title="Visualize Player">📸</button>
+                    </td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        function visualizeFromFoundingLeague(teamId, idx) {
+            const p = foundingLeagueRosters[teamId][idx];
+            builderState.origin = p.origin;
+            builderState.gender = p.gender;
+            builderState.physicalSubtype = p.physicalSubtype;
+            builderState.background = p.background;
+            builderState.expression = p.expression;
+            builderState.cameraAngle = p.cameraAngle;
+            builderState.flavor = p.flavor;
+            builderState.bodyShape = p.bodyShape;
+            builderState.uniformColor = p.uniformColor; // Locks to team color
+            builderState.eyewear = p.eyewear;
+            builderState.wristwear = p.wristwear;
+            builderState.tattoos = p.tattoos;
+            builderState.equipment = p.equipment;
+            builderState.hairStyle = p.hairStyle;
+            
+            document.getElementById('viz-name').value = p.name.replace(' ★', '');
+            syncVizDropdowns();
+            switchTab('tab-visualizer');
+            document.getElementById('portrait-result').classList.add('hidden');
+        }
+
+        function exportFoundingLeagueCSV() {
+            if (Object.keys(foundingLeagueRosters).length === 0) return;
+
+            let csv = "Team,Name,Exp,Pos,Hand,Intangibles,Salary,Arm,Bat,Glove,Legs,Fatigue,Gender,Subtype,Background,BodyShape,UniformColor,HairStyle\n";
+            
+            FOUNDING_TEAMS.forEach(team => {
+                const roster = foundingLeagueRosters[team.id];
+                const teamName = `${team.city} ${team.name}`;
+                if (roster) {
+                    roster.forEach(p => {
+                        csv += `"${teamName}","${p.name}","${p.exp}","${p.pos}","${p.hand}","${p.intangibles}","${p.sal}","${p.skills.Arm.b} DICE","${p.skills.Bat.b} DICE","${p.skills.Glove.b}B${p.skills.Glove.r}R","${p.skills.Legs.b}B${p.skills.Legs.r}R","${p.fatigue}","${p.gender}","${p.physicalSubtype}","${p.background}","${p.bodyShape}","${p.uniformColor}","${p.hairStyle}"\n`;
+                    });
+                }
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            saveAs(blob, "DLB_Founding_League_Rosters.csv");
+        }
+
+        async function batchDownloadFoundingLeague() {
+            const teamKeys = Object.keys(foundingLeagueRosters);
+            if (teamKeys.length === 0) return;
+
+            const batchBtn = document.getElementById('founding-batch-btn');
+            const progressContainer = document.getElementById('founding-progress-container');
+            const progressBar = document.getElementById('founding-progress-bar');
+            const progressText = document.getElementById('founding-progress-text');
+            const progressCount = document.getElementById('founding-progress-count');
+
+            batchBtn.disabled = true;
+            batchBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            progressContainer.classList.remove('hidden');
+
+            const zip = new JSZip();
+            let totalPlayers = 0;
+            teamKeys.forEach(t => totalPlayers += foundingLeagueRosters[t].length);
+            let completed = 0;
+
+            for (const team of FOUNDING_TEAMS) {
+                const roster = foundingLeagueRosters[team.id];
+                if (!roster) continue;
+
+                // Create a subfolder for each team
+                const teamFolder = zip.folder(`${team.city}_${team.name}`);
+
+                for (let i = 0; i < roster.length; i++) {
+                    const p = roster[i];
+                    completed++;
+                    
+                    progressText.innerText = `Generating portrait for ${p.name.replace(' ★', '')} (${team.name})...`;
+                    progressCount.innerText = `${completed} / ${totalPlayers}`;
+                    progressBar.style.width = `${(completed / totalPlayers) * 100}%`;
+
+                    const prompt = buildPrompt(p);
+
+                    try {
+                        const dataUrl = await callImagen(prompt);
+                        if (dataUrl) {
+                            const base64Data = dataUrl.split(',')[1];
+                            const safeName = p.name.replace(' ★', '').replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                            teamFolder.file(`${safeName}_portrait.png`, base64Data, {base64: true});
+                        }
+                        // Wait 4s to strictly respect API rate limits
+                        await new Promise(r => setTimeout(r, 4000));
+                    } catch (e) {
+                        console.error(`Failed to generate portrait for ${p.name}`, e);
+                    }
+                }
+            }
+
+            progressText.innerText = `Packing ZIP Archive...`;
+
+            // Create CSV Content
+            let csv = "Team,Name,Exp,Pos,Hand,Intangibles,Salary,Arm,Bat,Glove,Legs,Fatigue,Gender,Subtype,Background,BodyShape,UniformColor,HairStyle\n";
+            FOUNDING_TEAMS.forEach(team => {
+                const roster = foundingLeagueRosters[team.id];
+                const teamName = `${team.city} ${team.name}`;
+                if (roster) {
+                    roster.forEach(p => {
+                        csv += `"${teamName}","${p.name}","${p.exp}","${p.pos}","${p.hand}","${p.intangibles}","${p.sal}","${p.skills.Arm.b} DICE","${p.skills.Bat.b} DICE","${p.skills.Glove.b}B${p.skills.Glove.r}R","${p.skills.Legs.b}B${p.skills.Legs.r}R","${p.fatigue}","${p.gender}","${p.physicalSubtype}","${p.background}","${p.bodyShape}","${p.uniformColor}","${p.hairStyle}"\n`;
+                    });
+                }
+            });
+            zip.file("DLB_Founding_League_Rosters.csv", csv);
+
+            try {
+                const content = await zip.generateAsync({type:"blob"});
+                saveAs(content, "DLB_Founding_League_Package.zip");
+                progressText.innerText = `Complete!`;
+            } catch (e) {
+                console.error("Zip generation failed", e);
+                progressText.innerText = `Error packing ZIP!`;
+            }
+
+            setTimeout(() => {
+                progressContainer.classList.add('hidden');
+                batchBtn.disabled = false;
+                batchBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                progressBar.style.width = '0%';
+            }, 3000);
         }
 
         // --- VISUALIZER LOGIC ---
@@ -1304,6 +1863,7 @@
             currentFraming = framing;
             const bgViz = document.getElementById('viz-framing-bg');
             const bgLeague = document.getElementById('league-framing-bg');
+            const bgFounding = document.getElementById('founding-framing-bg');
 
             const lPort = document.getElementById('label-framing-portrait');
             const lFull = document.getElementById('label-framing-fullbody');
@@ -1311,26 +1871,29 @@
             const llPort = document.getElementById('league-framing-portrait');
             const llFull = document.getElementById('league-framing-fullbody');
             const llAct = document.getElementById('league-framing-action');
+            const fPort = document.getElementById('founding-framing-portrait');
+            const fFull = document.getElementById('founding-framing-fullbody');
+            const fAct = document.getElementById('founding-framing-action');
 
-            [lPort, lFull, lAct, llPort, llFull, llAct].forEach(el => {
+            [lPort, lFull, lAct, llPort, llFull, llAct, fPort, fFull, fAct].forEach(el => {
                 if(el) { el.classList.remove('text-blue-600'); el.classList.add('text-slate-400'); }
             });
 
             if (framing === 'portrait') {
                 if(bgViz) bgViz.style.transform = 'translateX(0)';
                 if(bgLeague) bgLeague.style.transform = 'translateX(0)';
-                if(lPort) { lPort.classList.add('text-blue-600'); lPort.classList.remove('text-slate-400'); }
-                if(llPort) { llPort.classList.add('text-blue-600'); llPort.classList.remove('text-slate-400'); }
+                if(bgFounding) bgFounding.style.transform = 'translateX(0)';
+                [lPort, llPort, fPort].forEach(el => { if(el) { el.classList.add('text-blue-600'); el.classList.remove('text-slate-400'); }});
             } else if (framing === 'fullbody') {
                 if(bgViz) bgViz.style.transform = 'translateX(100%)';
                 if(bgLeague) bgLeague.style.transform = 'translateX(100%)';
-                if(lFull) { lFull.classList.add('text-blue-600'); lFull.classList.remove('text-slate-400'); }
-                if(llFull) { llFull.classList.add('text-blue-600'); llFull.classList.remove('text-slate-400'); }
+                if(bgFounding) bgFounding.style.transform = 'translateX(100%)';
+                [lFull, llFull, fFull].forEach(el => { if(el) { el.classList.add('text-blue-600'); el.classList.remove('text-slate-400'); }});
             } else if (framing === 'action') {
                 if(bgViz) bgViz.style.transform = 'translateX(200%)';
                 if(bgLeague) bgLeague.style.transform = 'translateX(200%)';
-                if(lAct) { lAct.classList.add('text-blue-600'); lAct.classList.remove('text-slate-400'); }
-                if(llAct) { llAct.classList.add('text-blue-600'); llAct.classList.remove('text-slate-400'); }
+                if(bgFounding) bgFounding.style.transform = 'translateX(200%)';
+                [lAct, llAct, fAct].forEach(el => { if(el) { el.classList.add('text-blue-600'); el.classList.remove('text-slate-400'); }});
             }
         }
 
@@ -1347,9 +1910,15 @@
             const lLabelA = document.getElementById('league-label-anime');
             const lLabelS = document.getElementById('league-label-stylized');
             const lLabelSMB = document.getElementById('league-label-smb4');
+
+            const bgFounding = document.getElementById('founding-toggle-bg');
+            const fLabelR = document.getElementById('founding-label-realistic');
+            const fLabelA = document.getElementById('founding-label-anime');
+            const fLabelS = document.getElementById('founding-label-stylized');
+            const fLabelSMB = document.getElementById('founding-label-smb4');
             
             // Remove all active states
-            [labelR, labelA, labelS, labelSMB, lLabelR, lLabelA, lLabelS, lLabelSMB].forEach(l => {
+            [labelR, labelA, labelS, labelSMB, lLabelR, lLabelA, lLabelS, lLabelSMB, fLabelR, fLabelA, fLabelS, fLabelSMB].forEach(l => {
                 if(l) {
                     l.classList.remove('text-blue-600');
                     l.classList.add('text-slate-400');
@@ -1359,23 +1928,23 @@
             if (style === 'realistic') {
                 if(bg) bg.style.transform = 'translateX(0)';
                 if(bgLeague) bgLeague.style.transform = 'translateX(0)';
-                if(labelR) { labelR.classList.add('text-blue-600'); labelR.classList.remove('text-slate-400'); }
-                if(lLabelR) { lLabelR.classList.add('text-blue-600'); lLabelR.classList.remove('text-slate-400'); }
+                if(bgFounding) bgFounding.style.transform = 'translateX(0)';
+                [labelR, lLabelR, fLabelR].forEach(l => { if(l) { l.classList.add('text-blue-600'); l.classList.remove('text-slate-400'); }});
             } else if (style === 'anime') {
                 if(bg) bg.style.transform = 'translateX(100%)';
                 if(bgLeague) bgLeague.style.transform = 'translateX(100%)';
-                if(labelA) { labelA.classList.add('text-blue-600'); labelA.classList.remove('text-slate-400'); }
-                if(lLabelA) { lLabelA.classList.add('text-blue-600'); lLabelA.classList.remove('text-slate-400'); }
+                if(bgFounding) bgFounding.style.transform = 'translateX(100%)';
+                [labelA, lLabelA, fLabelA].forEach(l => { if(l) { l.classList.add('text-blue-600'); l.classList.remove('text-slate-400'); }});
             } else if (style === 'stylized') {
                 if(bg) bg.style.transform = 'translateX(200%)';
                 if(bgLeague) bgLeague.style.transform = 'translateX(200%)';
-                if(labelS) { labelS.classList.add('text-blue-600'); labelS.classList.remove('text-slate-400'); }
-                if(lLabelS) { lLabelS.classList.add('text-blue-600'); lLabelS.classList.remove('text-slate-400'); }
+                if(bgFounding) bgFounding.style.transform = 'translateX(200%)';
+                [labelS, lLabelS, fLabelS].forEach(l => { if(l) { l.classList.add('text-blue-600'); l.classList.remove('text-slate-400'); }});
             } else if (style === 'smb4') {
                 if(bg) bg.style.transform = 'translateX(300%)';
                 if(bgLeague) bgLeague.style.transform = 'translateX(300%)';
-                if(labelSMB) { labelSMB.classList.add('text-blue-600'); labelSMB.classList.remove('text-slate-400'); }
-                if(lLabelSMB) { lLabelSMB.classList.add('text-blue-600'); lLabelSMB.classList.remove('text-slate-400'); }
+                if(bgFounding) bgFounding.style.transform = 'translateX(300%)';
+                [labelSMB, lLabelSMB, fLabelSMB].forEach(l => { if(l) { l.classList.add('text-blue-600'); l.classList.remove('text-slate-400'); }});
             }
         }
 
@@ -1499,18 +2068,25 @@
             try {
                 const url = await callImagen(prompt);
                 if (url) {
-                    document.getElementById('viz-img').src = url;
+                    const imgEl = document.getElementById('viz-img');
+                    imgEl.src = url;
+                    imgEl.onload = () => {
+                        imgEl.classList.remove('hidden');
+                        document.getElementById('viz-shimmer').classList.add('hidden');
+                    };
                 }
             } catch (e) {
                 console.error("Render error:", e);
-                document.getElementById('viz-shimmer').innerHTML = '<span class="text-red-500 text-xs">Render Failed. Click to Retry.</span>';
+                document.getElementById('viz-shimmer').innerHTML = '<span class="text-red-500 font-bold uppercase italic text-[10px] text-center px-4">Render Failed. Click to Retry.</span>';
             }
         }
 
         function downloadViz() {
-            const dataUrl = document.getElementById('viz-img').src;
-            const name = document.getElementById('viz-name').value.replace(/\s+/g, '_').toLowerCase();
-            saveAs(dataUrl, `${name}_portrait.png`);
+            const imgEl = document.getElementById('viz-img');
+            if (imgEl && imgEl.src) {
+                const name = document.getElementById('viz-name').value.replace(/\s+/g, '_').toLowerCase();
+                saveAs(imgEl.src, `${name}_portrait.png`);
+            }
         }
 
         async function batchDownloadLeague() {

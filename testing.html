@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diamond League Baseball (DLB) Tester</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .die { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; font-weight: bold; margin: 2px; color: white; }
+        .die.blue { background-color: #3b82f6; }
+        .die.red { background-color: #ef4444; }
+        .die.black { background-color: #1f2937; }
+        .die.error { background-color: #f59e0b; }
+        
+        .batting-order-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background-color: #1f2937;
+            color: white;
+            border-radius: 50%;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .team-panel {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-slate-200 p-4 md:p-8 font-sans">
+    <div class="max-w-7xl mx-auto space-y-6">
+        
+        <!-- Roster Loader Banner -->
+        <div id="roster-loader-panel" class="bg-indigo-900 text-white p-5 rounded-xl shadow-lg flex flex-col md:flex-row items-center justify-between gap-4 border-b-4 border-indigo-500">
+            <div>
+                <h2 class="text-xl font-bold flex items-center"><span class="mr-2">📄</span> Roster Data Sync</h2>
+                <p class="text-sm text-indigo-200 mt-1" id="roster-status-text">Attempting to auto-load local roster file...</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <input type="file" id="roster-upload" accept=".md,.txt,.csv" class="hidden" onchange="handleRosterUpload(event)">
+                <button onclick="document.getElementById('roster-upload').click()" class="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded font-bold shadow transition-colors text-sm border border-indigo-400 flex items-center">
+                    <span class="mr-2">📁</span> Upload Roster File
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-lg flex justify-between items-center border-t-8 border-slate-800">
+            <div>
+                <h1 class="text-3xl font-black text-slate-900 tracking-tight">DLB Command Center</h1>
+                <div class="text-sm text-slate-500 font-bold uppercase tracking-wider mt-1">Game Testing Engine v4.0 (Live Data)</div>
+            </div>
+        </div>
+
+        <!-- Side-by-Side Lineup Manager -->
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            
+            <!-- AWAY TEAM PANEL -->
+            <div class="bg-white rounded-xl shadow-lg border-t-4 border-slate-400 overflow-hidden team-panel flex flex-col">
+                <div class="bg-slate-100 p-4 border-b">
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-2xl font-bold text-slate-700">Away Team</h2>
+                        <span class="bg-slate-800 text-white text-xs font-bold px-2 py-1 rounded">BATS FIRST</span>
+                    </div>
+                    <select id="away-team-select" class="w-full border-2 border-slate-300 p-2 rounded-lg font-bold text-lg focus:border-blue-500 focus:outline-none" onchange="loadTeam('away')">
+                        <option value="">Awaiting Data...</option>
+                    </select>
+                </div>
+                
+                <div class="p-4 bg-red-50 border-b border-red-100">
+                    <h3 class="font-bold text-red-900 mb-2 flex items-center"><span class="mr-2">⚾</span> Starting Pitcher</h3>
+                    <select id="away-pitcher-select" class="w-full border p-2 rounded mb-3 bg-white" onchange="updatePitcherStats('away')"></select>
+                    <div class="flex gap-2 md:gap-4">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase">Arm</label>
+                            <input type="number" id="away-pitcher-arm" class="w-16 border p-2 rounded font-bold text-lg bg-white" min="1" max="5">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase">Glv (B/R)</label>
+                            <div class="flex gap-1">
+                                <input type="number" id="away-pitcher-glv-b" class="w-12 border p-2 rounded font-bold text-lg bg-blue-50 text-blue-700" min="0" max="5">
+                                <input type="number" id="away-pitcher-glv-r" class="w-12 border p-2 rounded font-bold text-lg bg-red-50 text-red-700" min="0" max="5">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase">Leg (B/R)</label>
+                            <div class="flex gap-1">
+                                <input type="number" id="away-pitcher-leg-b" class="w-12 border p-2 rounded font-bold text-lg bg-blue-50 text-blue-700" min="0" max="5">
+                                <input type="number" id="away-pitcher-leg-r" class="w-12 border p-2 rounded font-bold text-lg bg-red-50 text-red-700" min="0" max="5">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-red-500 uppercase">Fatigue</label>
+                            <input type="number" id="away-pitcher-fatigue" class="w-16 border p-2 rounded font-bold text-lg text-red-600 bg-white" value="0" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 flex-grow bg-slate-50">
+                    <h3 class="font-bold text-slate-700 mb-3 flex items-center"><span class="mr-2">🏏</span> Batting Lineup (1-9)</h3>
+                    <div id="away-lineup-container" class="space-y-2">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- HOME TEAM PANEL -->
+            <div class="bg-white rounded-xl shadow-lg border-t-4 border-blue-600 overflow-hidden team-panel flex flex-col">
+                <div class="bg-blue-50 p-4 border-b border-blue-100">
+                    <div class="flex justify-between items-center mb-2">
+                        <h2 class="text-2xl font-bold text-blue-900">Home Team</h2>
+                        <span class="bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">TAKES FIELD</span>
+                    </div>
+                    <select id="home-team-select" class="w-full border-2 border-blue-300 p-2 rounded-lg font-bold text-lg focus:border-blue-500 focus:outline-none" onchange="loadTeam('home')">
+                        <option value="">Awaiting Data...</option>
+                    </select>
+                </div>
+                
+                <div class="p-4 bg-red-50 border-b border-red-100">
+                    <h3 class="font-bold text-red-900 mb-2 flex items-center"><span class="mr-2">⚾</span> Starting Pitcher</h3>
+                    <select id="home-pitcher-select" class="w-full border p-2 rounded mb-3 bg-white" onchange="updatePitcherStats('home')"></select>
+                    <div class="flex gap-2 md:gap-4">
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase">Arm</label>
+                            <input type="number" id="home-pitcher-arm" class="w-16 border p-2 rounded font-bold text-lg bg-white" min="1" max="5">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase">Glv (B/R)</label>
+                            <div class="flex gap-1">
+                                <input type="number" id="home-pitcher-glv-b" class="w-12 border p-2 rounded font-bold text-lg bg-blue-50 text-blue-700" min="0" max="5">
+                                <input type="number" id="home-pitcher-glv-r" class="w-12 border p-2 rounded font-bold text-lg bg-red-50 text-red-700" min="0" max="5">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase">Leg (B/R)</label>
+                            <div class="flex gap-1">
+                                <input type="number" id="home-pitcher-leg-b" class="w-12 border p-2 rounded font-bold text-lg bg-blue-50 text-blue-700" min="0" max="5">
+                                <input type="number" id="home-pitcher-leg-r" class="w-12 border p-2 rounded font-bold text-lg bg-red-50 text-red-700" min="0" max="5">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-red-500 uppercase">Fatigue</label>
+                            <input type="number" id="home-pitcher-fatigue" class="w-16 border p-2 rounded font-bold text-lg text-red-600 bg-white" value="0" min="0">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-4 flex-grow bg-slate-50">
+                    <h3 class="font-bold text-slate-700 mb-3 flex items-center"><span class="mr-2">🏏</span> Batting Lineup (1-9)</h3>
+                    <div id="home-lineup-container" class="space-y-2">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- At-Bat Simulator -->
+        <div class="bg-white p-6 rounded-xl shadow-lg border-l-8 border-green-500">
+            <h2 class="text-2xl font-black mb-4 border-b pb-2 text-slate-800">At-Bat Simulator</h2>
+            
+            <div class="flex flex-col md:flex-row items-center gap-4 mb-6 bg-slate-100 p-4 rounded-lg border border-slate-200">
+                
+                <div class="flex items-center gap-2">
+                    <label class="font-bold text-slate-700 uppercase text-sm tracking-wide">Inning:</label>
+                    <select id="inning-half-toggle" class="border p-2 rounded bg-white font-bold text-blue-800 shadow-sm" onchange="updateSkillDropdowns()">
+                        <option value="top">Top (Away Bats vs Home Pitches)</option>
+                        <option value="bottom">Bottom (Home Bats vs Away Pitches)</option>
+                    </select>
+                </div>
+
+                <div class="flex items-center gap-2 md:ml-4 border-l md:pl-4 border-slate-300">
+                    <label class="font-bold text-slate-700 uppercase text-sm tracking-wide">Batter Spot:</label>
+                    <select id="current-batter-spot" class="border p-2 rounded bg-white w-32 font-bold shadow-sm text-center">
+                        <option value="0">#1 </option>
+                        <option value="1">#2</option>
+                        <option value="2">#3</option>
+                        <option value="3">#4</option>
+                        <option value="4">#5</option>
+                        <option value="5">#6</option>
+                        <option value="6">#7</option>
+                        <option value="7">#8</option>
+                        <option value="8">#9</option>
+                    </select>
+                </div>
+
+                <div class="flex gap-2 ml-auto w-full md:w-auto mt-4 md:mt-0">
+                    <button onclick="nextBatter()" class="flex-1 md:flex-none bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-2 px-4 rounded shadow transition-colors">
+                        Next Batter ➡
+                    </button>
+                    <button onclick="simulateAtBat()" class="flex-1 md:flex-none bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-8 rounded shadow-lg transition-colors text-lg">
+                        ROLL AT-BAT
+                    </button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Pitcher Roll -->
+                <div class="p-5 bg-red-50 rounded-lg border border-red-200 shadow-inner">
+                    <h3 class="font-black text-xl mb-3 text-red-800 uppercase tracking-wide border-b border-red-200 pb-1" id="pitcher-title">Pitching</h3>
+                    <div id="pitcher-dice" class="flex flex-wrap gap-2 min-h-[48px] p-3 bg-white rounded border border-red-100 shadow-sm"></div>
+                    <div id="pitcher-results" class="mt-3 text-sm font-bold text-red-900 bg-red-100 inline-block px-3 py-1 rounded"></div>
+                </div>
+                <!-- Batter Roll -->
+                <div class="p-5 bg-blue-50 rounded-lg border border-blue-200 shadow-inner">
+                    <h3 class="font-black text-xl mb-3 text-blue-800 uppercase tracking-wide border-b border-blue-200 pb-1" id="batter-title">Batting</h3>
+                    <div class="flex gap-2">
+                        <div id="batter-dice" class="flex flex-wrap gap-2 min-h-[48px] p-3 bg-white rounded border border-blue-100 shadow-sm flex-grow"></div>
+                        <div class="flex flex-col items-center justify-center bg-emerald-50 border border-emerald-200 rounded px-2 min-w-[75px]">
+                            <span class="text-[9px] font-black text-emerald-700 uppercase tracking-wider mb-1">Spray d10</span>
+                            <div id="spray-die" class="flex items-center justify-center w-10 h-10 bg-emerald-500 text-white font-bold rounded shadow">-</div>
+                        </div>
+                    </div>
+                    <div id="batter-results" class="mt-3 text-sm font-bold text-blue-900 bg-blue-100 inline-block px-3 py-1 rounded"></div>
+                </div>
+            </div>
+            
+            <div class="mt-6 p-5 bg-slate-50 rounded-lg border-2 border-dashed border-slate-300 text-center" id="resolution-container">
+                <h3 class="font-black text-slate-400 uppercase tracking-widest text-sm mb-2">Outcome</h3>
+                <p id="at-bat-resolution" class="text-2xl font-black text-slate-600">Awaiting pitch...</p>
+            </div>
+        </div>
+
+        <!-- Simulation Tools Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Skill Roll Simulator -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-yellow-500">
+                <h2 class="text-xl font-black mb-4 border-b pb-2 text-slate-800 flex items-center justify-between">
+                    Single Skill Roll
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider bg-slate-100 px-2 py-1 rounded">Fielding/Running</span>
+                </h2>
+                
+                <div class="flex gap-2 mb-3">
+                    <select id="single-skill-player" class="border p-2 rounded flex-grow text-sm font-bold text-slate-700 bg-slate-50 shadow-sm" onchange="updateSingleSkill()"></select>
+                    <select id="single-skill-stat" class="border p-2 rounded text-sm font-bold text-slate-700 bg-slate-50 shadow-sm" onchange="updateSingleSkill()">
+                        <option value="glove">Glove</option>
+                        <option value="legs">Legs</option>
+                        <option value="arm">Arm</option>
+                        <option value="bat">Bat</option>
+                    </select>
+                </div>
+
+                <div class="flex gap-4 items-center p-4 bg-slate-50 rounded border mb-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-blue-600 uppercase block">Blue</label>
+                        <input type="number" id="skill-blue" value="2" min="0" class="border p-2 w-16 rounded font-bold text-lg shadow-sm">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-red-600 uppercase block">Red</label>
+                        <input type="number" id="skill-red" value="1" min="0" class="border p-2 w-16 rounded font-bold text-lg shadow-sm">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-800 uppercase block">Error/Fatigue</label>
+                        <input type="number" id="skill-error" value="0" min="0" class="border p-2 w-20 rounded font-bold text-lg text-amber-600 shadow-sm">
+                    </div>
+                    <button onclick="simulateSkillRoll()" class="ml-auto bg-yellow-500 hover:bg-yellow-400 text-slate-900 font-bold py-3 px-6 rounded shadow transition-colors">
+                        Roll Skill
+                    </button>
+                </div>
+                
+                <div id="skill-output" class="p-4 bg-white rounded border min-h-[80px] shadow-inner mb-3"></div>
+                <div id="skill-resolution" class="p-3 bg-slate-100 rounded border font-medium text-slate-700 text-center">Ready to roll.</div>
+            </div>
+
+            <!-- Opposed Roll Simulator -->
+            <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 border-purple-500">
+                <h2 class="text-xl font-black mb-4 border-b pb-2 text-slate-800 flex items-center justify-between">
+                    Opposed Roll Simulator
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider bg-slate-100 px-2 py-1 rounded">Contested Actions</span>
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div class="space-y-2 p-3 border rounded bg-slate-50">
+                        <h3 class="font-bold text-sm text-slate-700">Player A (e.g. Runner)</h3>
+                        <div class="flex gap-1">
+                            <select id="p1-player" class="border p-1 w-full text-xs rounded bg-white font-bold shadow-sm" onchange="updateOpposedSkill('p1')"></select>
+                            <select id="p1-stat" class="border p-1 text-xs rounded bg-white font-bold shadow-sm" onchange="updateOpposedSkill('p1')">
+                                <option value="legs">Legs</option>
+                                <option value="glove">Glove</option>
+                                <option value="arm">Arm</option>
+                                <option value="bat">Bat</option>
+                            </select>
+                        </div>
+                        <div class="flex gap-2 items-center">
+                            <input type="number" id="p1-blue" value="2" min="0" class="border p-1 w-12 rounded text-center text-blue-600 font-bold shadow-sm" title="Blue Dice">
+                            <input type="number" id="p1-red" value="1" min="0" class="border p-1 w-12 rounded text-center text-red-600 font-bold shadow-sm" title="Red Dice">
+                            <input type="number" id="p1-error" value="0" min="0" class="border p-1 w-12 rounded text-center text-slate-800 font-bold bg-amber-50 shadow-sm" title="Error/Fatigue">
+                        </div>
+                    </div>
+                    <div class="space-y-2 p-3 border rounded bg-slate-50">
+                        <h3 class="font-bold text-sm text-slate-700">Player B (e.g. Fielder)</h3>
+                        <div class="flex gap-1">
+                            <select id="p2-player" class="border p-1 w-full text-xs rounded bg-white font-bold shadow-sm" onchange="updateOpposedSkill('p2')"></select>
+                            <select id="p2-stat" class="border p-1 text-xs rounded bg-white font-bold shadow-sm" onchange="updateOpposedSkill('p2')">
+                                <option value="glove">Glove</option>
+                                <option value="legs">Legs</option>
+                                <option value="arm">Arm</option>
+                                <option value="bat">Bat</option>
+                            </select>
+                        </div>
+                        <div class="flex gap-2 items-center">
+                            <input type="number" id="p2-blue" value="2" min="0" class="border p-1 w-12 rounded text-center text-blue-600 font-bold shadow-sm" title="Blue Dice">
+                            <input type="number" id="p2-red" value="1" min="0" class="border p-1 w-12 rounded text-center text-red-600 font-bold shadow-sm" title="Red Dice">
+                            <input type="number" id="p2-error" value="0" min="0" class="border p-1 w-12 rounded text-center text-slate-800 font-bold bg-amber-50 shadow-sm" title="Error/Fatigue">
+                        </div>
+                    </div>
+                </div>
+                
+                <button onclick="simulateOpposedRoll()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-6 rounded shadow mb-4 transition-colors">
+                    Resolve Opposed Roll
+                </button>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div id="p1-output" class="p-3 bg-white rounded border min-h-[80px] shadow-inner text-sm"></div>
+                    <div id="p2-output" class="p-3 bg-white rounded border min-h-[80px] shadow-inner text-sm"></div>
+                </div>
+                <div class="mt-3 p-3 bg-purple-50 rounded border border-purple-200 text-center">
+                    <p id="opposed-resolution" class="font-bold text-purple-900">Pending...</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- DYNAMIC ROSTER LOADING LOGIC ---
+        let LEAGUE_DATA = {};
+
+        // Run on page load
+        window.onload = function() {
+            buildLineupUI('away');
+            buildLineupUI('home');
+            attemptAutoLoad();
+        };
+
+        // Try to fetch the local file automatically (Will work on servers, blocked by file:// CORS)
+        async function attemptAutoLoad() {
+            try {
+                // Tries to look for the file in the exact same folder as this HTML file
+                const response = await fetch('DLB_Founding_League_Rosters.md'); 
+                if (!response.ok) {
+                    // Try .txt just in case
+                    const responseTxt = await fetch('DLB_Founding_League_Rosters.txt');
+                    if (!responseTxt.ok) throw new Error("File not found on local path");
+                    const text = await responseTxt.text();
+                    processRosterData(text, "Auto-loaded from DLB_Founding_League_Rosters.txt");
+                    return;
+                }
+                const text = await response.text();
+                processRosterData(text, "Auto-loaded from DLB_Founding_League_Rosters.md");
+            } catch (error) {
+                console.log("Auto-load blocked or file missing (normal for desktop HTML files).", error);
+                document.getElementById('roster-status-text').innerHTML = "Auto-load unavailable (browser security). Please <strong>Upload Roster File</strong> to begin.";
+                loadFallbackData(); 
+            }
+        }
+
+        // Handle Manual File Upload
+        function handleRosterUpload(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                processRosterData(e.target.result, `Loaded from ${file.name}`);
+            };
+            reader.readAsText(file);
+        }
+
+        // Parse the Markdown Table directly
+        function processRosterData(markdownText, statusMsg) {
+            const parsedData = parseMarkdownTable(markdownText);
+            
+            if (parsedData && Object.keys(parsedData).length > 0) {
+                LEAGUE_DATA = parsedData;
+                document.getElementById('roster-status-text').innerHTML = `<span class="text-green-300 font-bold">✅ Success:</span> ${statusMsg} (${Object.keys(LEAGUE_DATA).length} teams loaded)`;
+                initApp(); // Boot up UI
+            } else {
+                document.getElementById('roster-status-text').innerHTML = `<span class="text-red-300 font-bold">❌ Error:</span> Could not parse markdown table from file. Ensure it is the correct DLB format.`;
+            }
+        }
+
+        function parseDiceStat(str) {
+            if(!str) return { b: 2, r: 0 };
+            str = str.toUpperCase().trim();
+            let b = 2, r = 0;
+            if(str.includes('B') || str.includes('R')) {
+                const bMatch = str.match(/(\d+)\s*B/);
+                const rMatch = str.match(/(\d+)\s*R/);
+                b = bMatch ? parseInt(bMatch[1]) : 0;
+                r = rMatch ? parseInt(rMatch[1]) : 0;
+            } else if (str !== '') {
+                // Fallback for old single-number format (defaulting to Blue)
+                b = parseInt(str.replace(/\D/g, '')) || 2;
+                r = 0;
+            }
+            return { b, r };
+        }
+
+        function parseMarkdownTable(mdText) {
+            const lines = mdText.split('\n').filter(line => line.trim().startsWith('|'));
+            if(lines.length < 3) return null;
+
+            const data = {};
+
+            // Start at 2 to skip header and the divider line (|---|---|)
+            for(let i = 2; i < lines.length; i++) {
+                const cols = lines[i].split('|').map(col => col.trim());
+                if(cols.length < 10) continue; 
+
+                const team = cols[1];
+                if(!team || team === "") continue;
+
+                if(!data[team]) {
+                    data[team] = { pitchers: [], batters: [] };
+                }
+
+                const name = cols[2];
+                const pos = cols[4];
+                const intangibles = cols[6];
+                
+                // Extract just the numbers from "3 DICE"
+                const arm = parseInt(cols[8]?.replace(/\D/g, '')) || 0; 
+                const bat = parseInt(cols[9]?.replace(/\D/g, '')) || 0;
+                
+                // Parse split B/R stats for Gloves and Legs
+                const glove = parseDiceStat(cols[10]);
+                const legs = parseDiceStat(cols[11]);
+
+                const player = { name, pos, arm, bat, glove, legs, desc: intangibles };
+
+                // Separate them for ease of use, but let everyone bat if needed
+                if(pos.includes('P')) {
+                    data[team].pitchers.push(player);
+                }
+                // Add all players to the batting lineup options
+                data[team].batters.push(player);
+            }
+
+            // Fallback generation: Ensure all teams have at least 1 Pitcher and 9 Batters to prevent crashes
+            for(let team in data) {
+                if(data[team].pitchers.length === 0) {
+                    data[team].pitchers.push({ name: "Generic Pitcher", arm: 3, bat: 1, glove: {b:2, r:0}, legs: {b:2, r:0}, pos: "P", desc: "Generated Fill" });
+                }
+                let bCount = data[team].batters.length;
+                for(let i = bCount; i < 9; i++) {
+                    data[team].batters.push({ name: `Generic Batter ${i+1}`, arm: 2, bat: 2, glove: {b:2, r:0}, legs: {b:2, r:0}, pos: "UI", desc: "Generated Fill" });
+                }
+            }
+
+            return data;
+        }
+
+        // Just in case they test before uploading
+        function loadFallbackData() {
+            LEAGUE_DATA = {
+                "Upload Data to Populate": {
+                    pitchers: [{ name: "Awaiting Data", arm: 0, bat: 0, glove: {b:0, r:0}, legs: {b:0, r:0}, pos: "P", desc: "" }],
+                    batters: Array(9).fill({ name: "Awaiting Data", arm: 0, bat: 0, glove: {b:0, r:0}, legs: {b:0, r:0}, pos: "UI", desc: "" })
+                }
+            };
+            initApp();
+        }
+
+        // --- INITIALIZATION ---
+        function initApp() {
+            const teamNames = Object.keys(LEAGUE_DATA);
+            const awaySelect = document.getElementById('away-team-select');
+            const homeSelect = document.getElementById('home-team-select');
+            
+            awaySelect.innerHTML = '';
+            homeSelect.innerHTML = '';
+
+            teamNames.forEach(team => {
+                awaySelect.add(new Option(team, team));
+                homeSelect.add(new Option(team, team));
+            });
+
+            // Set default matchups if multiple teams exist
+            if (teamNames.length > 1) {
+                awaySelect.selectedIndex = 0; 
+                homeSelect.selectedIndex = 1; 
+            }
+
+            loadTeam('away');
+            loadTeam('home');
+        }
+
+        function buildLineupUI(side) {
+            const container = document.getElementById(`${side}-lineup-container`);
+            container.innerHTML = '';
+            
+            for(let i = 0; i < 9; i++) {
+                container.innerHTML += `
+                    <div class="flex gap-1 md:gap-2 items-center bg-white p-2 rounded border shadow-sm hover:border-blue-400 transition-colors">
+                        <span class="batting-order-number flex-shrink-0">${i + 1}</span>
+                        <select id="${side}-player-${i}" class="flex-grow border-none bg-transparent font-medium text-slate-800 focus:outline-none min-w-0 text-sm md:text-base" onchange="updateBatterStats('${side}', ${i})"></select>
+                        <div class="w-10 md:w-12 text-center border-l pl-1 md:pl-2">
+                            <label class="text-[8px] md:text-[9px] font-bold text-slate-400 block leading-none mb-1">BAT</label>
+                            <input type="number" id="${side}-bat-${i}" class="w-full text-center border p-1 rounded font-bold text-sm bg-slate-50" min="1" max="5">
+                        </div>
+                        <div class="w-16 md:w-20 text-center border-l pl-1 md:pl-2 hidden sm:block">
+                            <label class="text-[8px] md:text-[9px] font-bold text-slate-400 block leading-none mb-1">GLV (B/R)</label>
+                            <div class="flex gap-1">
+                                <input type="number" id="${side}-glv-b-${i}" class="w-full text-center border p-1 rounded font-bold text-sm bg-blue-50 text-blue-600" min="0" max="5" title="Blue Glove Dice">
+                                <input type="number" id="${side}-glv-r-${i}" class="w-full text-center border p-1 rounded font-bold text-sm bg-red-50 text-red-600" min="0" max="5" title="Red Glove Dice">
+                            </div>
+                        </div>
+                        <div class="w-16 md:w-20 text-center border-l pl-1 md:pl-2 hidden sm:block">
+                            <label class="text-[8px] md:text-[9px] font-bold text-slate-400 block leading-none mb-1">LEG (B/R)</label>
+                            <div class="flex gap-1">
+                                <input type="number" id="${side}-leg-b-${i}" class="w-full text-center border p-1 rounded font-bold text-sm bg-blue-50 text-blue-600" min="0" max="5" title="Blue Leg Dice">
+                                <input type="number" id="${side}-leg-r-${i}" class="w-full text-center border p-1 rounded font-bold text-sm bg-red-50 text-red-600" min="0" max="5" title="Red Leg Dice">
+                            </div>
+                        </div>
+                        <div class="w-12 text-center border-l pl-1 md:pl-2">
+                            <label class="text-[8px] md:text-[9px] font-bold text-red-400 block leading-none mb-1">FATIGUE</label>
+                            <input type="number" id="${side}-fatigue-${i}" class="w-full text-center border border-red-200 p-1 rounded font-bold text-sm text-red-600 bg-red-50" value="0" min="0">
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // --- ROSTER LOGIC ---
+        function loadTeam(side) {
+            const teamName = document.getElementById(`${side}-team-select`).value;
+            if(!teamName) return;
+
+            const batters = LEAGUE_DATA[teamName].batters;
+            const pitchers = LEAGUE_DATA[teamName].pitchers;
+
+            // Load Pitchers
+            const pSelect = document.getElementById(`${side}-pitcher-select`);
+            pSelect.innerHTML = '';
+            pitchers.forEach((p, index) => {
+                pSelect.add(new Option(`${p.name} - ${p.desc}`, index));
+            });
+            updatePitcherStats(side);
+
+            // Load Batters
+            for(let i = 0; i < 9; i++) {
+                const select = document.getElementById(`${side}-player-${i}`);
+                if(!select) continue;
+                select.innerHTML = '';
+                
+                batters.forEach((b, index) => {
+                    select.add(new Option(`${b.name} (${b.pos})`, index));
+                });
+                
+                // Pre-select spots 1-9
+                if (batters[i]) select.selectedIndex = i;
+                updateBatterStats(side, i);
+            }
+
+            updateSkillDropdowns();
+        }
+
+        function updateBatterStats(side, slotIndex) {
+            const teamName = document.getElementById(`${side}-team-select`).value;
+            const batters = LEAGUE_DATA[teamName].batters;
+            const selectedPlayerIndex = document.getElementById(`${side}-player-${slotIndex}`).value;
+            const player = batters[selectedPlayerIndex];
+            
+            if(player) {
+                document.getElementById(`${side}-bat-${slotIndex}`).value = player.bat || 2;
+                document.getElementById(`${side}-glv-b-${slotIndex}`).value = player.glove?.b || 0;
+                document.getElementById(`${side}-glv-r-${slotIndex}`).value = player.glove?.r || 0;
+                document.getElementById(`${side}-leg-b-${slotIndex}`).value = player.legs?.b || 0;
+                document.getElementById(`${side}-leg-r-${slotIndex}`).value = player.legs?.r || 0;
+                document.getElementById(`${side}-fatigue-${slotIndex}`).value = 0; 
+            }
+        }
+
+        function updatePitcherStats(side) {
+            const teamName = document.getElementById(`${side}-team-select`).value;
+            const pitchers = LEAGUE_DATA[teamName].pitchers;
+            const selectedIndex = document.getElementById(`${side}-pitcher-select`).value;
+            const pitcher = pitchers[selectedIndex];
+
+            if(pitcher) {
+                document.getElementById(`${side}-pitcher-arm`).value = pitcher.arm || 2;
+                document.getElementById(`${side}-pitcher-glv-b`).value = pitcher.glove?.b || 0;
+                document.getElementById(`${side}-pitcher-glv-r`).value = pitcher.glove?.r || 0;
+                document.getElementById(`${side}-pitcher-leg-b`).value = pitcher.legs?.b || 0;
+                document.getElementById(`${side}-pitcher-leg-r`).value = pitcher.legs?.r || 0;
+                document.getElementById(`${side}-pitcher-fatigue`).value = 0; 
+            }
+        }
+
+        // --- AT-BAT NAVIGATION ---
+        function nextBatter() {
+            const select = document.getElementById('current-batter-spot');
+            let current = parseInt(select.value);
+            current = (current + 1) % 9; 
+            select.value = current;
+        }
+
+        // --- SKILL ROLL DROPDOWN LOGIC ---
+        function updateSkillDropdowns() {
+            const inning = document.getElementById('inning-half-toggle').value;
+            const batSide = inning === 'top' ? 'away' : 'home';
+            const pitchSide = inning === 'top' ? 'home' : 'away';
+
+            const batTeam = document.getElementById(`${batSide}-team-select`).value;
+            const pitchTeam = document.getElementById(`${pitchSide}-team-select`).value;
+
+            if (!LEAGUE_DATA[batTeam] || !LEAGUE_DATA[pitchTeam]) return;
+
+            const singleSelect = document.getElementById('single-skill-player');
+            const p1Select = document.getElementById('p1-player');
+            const p2Select = document.getElementById('p2-player');
+
+            // Single Skill is limited to the Fielding Team (not batting)
+            populateDropdown(singleSelect, LEAGUE_DATA[pitchTeam].batters);
+            
+            // Opposed A defaults to Batting Team (Runner)
+            populateDropdown(p1Select, LEAGUE_DATA[batTeam].batters);
+
+            // Opposed B defaults to Fielding Team (Fielder)
+            populateDropdown(p2Select, LEAGUE_DATA[pitchTeam].batters);
+
+            // Trigger stat updates
+            updateSingleSkill();
+            updateOpposedSkill('p1');
+            updateOpposedSkill('p2');
+        }
+
+        function populateDropdown(selectElement, players) {
+            const currentVal = selectElement.value;
+            selectElement.innerHTML = '';
+            players.forEach((p, index) => {
+                selectElement.add(new Option(`${p.name} (${p.pos})`, index));
+            });
+            if (currentVal && currentVal < players.length) {
+                selectElement.value = currentVal;
+            }
+        }
+
+        function getPlayerStatValues(player, statType) {
+            if (!player) return { b: 0, r: 0 };
+            let b = 0, r = 0;
+            if (statType === 'glove') { b = player.glove?.b || 0; r = player.glove?.r || 0; }
+            else if (statType === 'legs') { b = player.legs?.b || 0; r = player.legs?.r || 0; }
+            else if (statType === 'arm') { b = player.arm || 0; r = 0; } 
+            else if (statType === 'bat') { b = player.bat || 0; r = 0; }
+            return { b, r };
+        }
+
+        function updateSingleSkill() {
+            const inning = document.getElementById('inning-half-toggle').value;
+            const pitchSide = inning === 'top' ? 'home' : 'away';
+            const pitchTeam = document.getElementById(`${pitchSide}-team-select`).value;
+            
+            if (!LEAGUE_DATA[pitchTeam]) return;
+
+            const playerIndex = document.getElementById('single-skill-player').value;
+            const player = LEAGUE_DATA[pitchTeam].batters[playerIndex];
+            const statType = document.getElementById('single-skill-stat').value;
+
+            if (player) {
+                const stats = getPlayerStatValues(player, statType);
+                document.getElementById('skill-blue').value = stats.b;
+                document.getElementById('skill-red').value = stats.r;
+                document.getElementById('skill-error').value = 0;
+            }
+        }
+
+        function updateOpposedSkill(prefix) {
+            const inning = document.getElementById('inning-half-toggle').value;
+            // P1 = Batting Team, P2 = Pitching/Fielding Team
+            const teamSide = (prefix === 'p1') ? 
+                (inning === 'top' ? 'away' : 'home') : 
+                (inning === 'top' ? 'home' : 'away');
+            
+            const teamName = document.getElementById(`${teamSide}-team-select`).value;
+            if (!LEAGUE_DATA[teamName]) return;
+
+            const playerIndex = document.getElementById(`${prefix}-player`).value;
+            const player = LEAGUE_DATA[teamName].batters[playerIndex];
+            const statType = document.getElementById(`${prefix}-stat`).value;
+
+            if (player) {
+                const stats = getPlayerStatValues(player, statType);
+                document.getElementById(`${prefix}-blue`).value = stats.b;
+                document.getElementById(`${prefix}-red`).value = stats.r;
+                document.getElementById(`${prefix}-error`).value = 0;
+            }
+        }
+
+        // --- CORE DICE ENGINE ---
+        const DICE = {
+            blue: ['H', 'H', 'H', 'S', 'S', 'S', 'B', 'Blank'],
+            red: ['H', 'H', '2H', 'S', 'S', '2S', 'E', 'Blank'],
+            black: ['H', 'S', 'B', 'B', 'B', 'E', 'E', 'Blank']
+        };
+
+        function rollDie(color) {
+            const faces = DICE[color];
+            return faces[Math.floor(Math.random() * faces.length)];
+        }
+
+        function createDieElement(color, result) {
+            return `<div class="die ${color} shadow">${result}</div>`;
+        }
+
+        function randomizePool(stat, fatigue) {
+            let blue = 0;
+            let red = 0;
+            let black = fatigue;
+            let availableDice = Math.max(0, stat - fatigue);
+
+            for (let i = 0; i < availableDice; i++) {
+                if (Math.random() > 0.5) blue++;
+                else red++;
+            }
+            return { blue, red, black };
+        }
+
+        function evaluateRoll(pool) {
+            let results = { raw: [], counts: { H: 0, S: 0, B: 0, E: 0, Blank: 0 }, html: "" };
+            
+            ['blue', 'red', 'black'].forEach(color => {
+                for (let i = 0; i < pool[color]; i++) {
+                    let result = rollDie(color);
+                    results.raw.push(result);
+                    results.html += createDieElement(color, result);
+                    
+                    if (result === '2H') results.counts.H += 2;
+                    else if (result === '2S') results.counts.S += 2;
+                    else results.counts[result]++;
+                }
+            });
+            return results;
+        }
+
+        // --- SIMULATORS ---
+        function simulateAtBat() {
+            const inning = document.getElementById('inning-half-toggle').value;
+            const batterSpot = document.getElementById('current-batter-spot').value;
+            
+            // Determine active teams
+            const batSide = inning === 'top' ? 'away' : 'home';
+            const pitchSide = inning === 'top' ? 'home' : 'away';
+
+            // Extract Batter Data
+            const batStat = parseInt(document.getElementById(`${batSide}-bat-${batterSpot}`).value) || 0;
+            const batFatigue = parseInt(document.getElementById(`${batSide}-fatigue-${batterSpot}`).value) || 0;
+            const batterSelect = document.getElementById(`${batSide}-player-${batterSpot}`);
+            const batterName = batterSelect.options[batterSelect.selectedIndex].text.split(' (')[0];
+
+            // Extract Pitcher Data
+            const armStat = parseInt(document.getElementById(`${pitchSide}-pitcher-arm`).value) || 0;
+            const armFatigue = parseInt(document.getElementById(`${pitchSide}-pitcher-fatigue`).value) || 0;
+            const pitcherSelect = document.getElementById(`${pitchSide}-pitcher-select`);
+            const pitcherName = pitcherSelect.options[pitcherSelect.selectedIndex].text.split(' - ')[0];
+
+            // Update UI Titles
+            document.getElementById('batter-title').innerHTML = `🏏 ${batterName} <span class="text-sm text-blue-500 font-normal ml-2">BAT: ${batStat}</span>`;
+            document.getElementById('pitcher-title').innerHTML = `⚾ ${pitcherName} <span class="text-sm text-red-500 font-normal ml-2">ARM: ${armStat}</span>`;
+
+            // Randomize & Roll
+            const batterPool = randomizePool(batStat, batFatigue);
+            const pitcherPool = randomizePool(armStat, armFatigue);
+            
+            let batterRoll = evaluateRoll(batterPool);
+            let pitcherRoll = evaluateRoll(pitcherPool);
+            
+            // Roll the d10 Spray Die
+            const sprayResult = Math.floor(Math.random() * 10) + 1;
+
+            document.getElementById('batter-dice').innerHTML = batterRoll.html || "<span class='text-slate-400 text-sm'>No dice rolled</span>";
+            document.getElementById('spray-die').innerText = sprayResult;
+            document.getElementById('pitcher-dice').innerHTML = pitcherRoll.html || "<span class='text-slate-400 text-sm'>No dice rolled</span>";
+
+            // Phase 1 Cancellations: Errors Self-Cancel
+            batterRoll.counts.H = Math.max(0, batterRoll.counts.H - batterRoll.counts.E);
+            pitcherRoll.counts.S = Math.max(0, pitcherRoll.counts.S - pitcherRoll.counts.E);
+
+            // Phase 2 Cancellations: Mutual Cancellation
+            let finalHits = batterRoll.counts.H;
+            let finalStrikes = pitcherRoll.counts.S;
+            let totalBalls = batterRoll.counts.B + pitcherRoll.counts.B;
+
+            let minCancel = Math.min(finalHits, finalStrikes);
+            finalHits -= minCancel;
+            finalStrikes -= minCancel;
+
+            document.getElementById('batter-results').innerHTML = `Net Hits: ${finalHits} &nbsp;|&nbsp; Balls: ${batterRoll.counts.B} &nbsp;|&nbsp; Errors: ${batterRoll.counts.E}`;
+            document.getElementById('pitcher-results').innerHTML = `Net Strikes: ${finalStrikes} &nbsp;|&nbsp; Balls: ${pitcherRoll.counts.B} &nbsp;|&nbsp; Errors: ${pitcherRoll.counts.E}`;
+
+            // Phase 3: Resolution Outcome
+            let outcome = "";
+            let resContainer = document.getElementById('resolution-container');
+            
+            if (finalHits > finalStrikes) {
+                outcome = `⚾ <strong>${batterName} Wins!</strong> Ball in play (${finalHits} Hit successes) &nbsp;&bull;&nbsp; <strong>Spray: ${sprayResult}</strong>`;
+                resContainer.className = "mt-6 p-5 rounded-lg border-2 bg-green-50 border-green-400 text-green-900 text-center";
+            } else if (finalStrikes > finalHits) {
+                outcome = `❌ <strong>${pitcherName} Wins!</strong> Strikeout / Groundout.`;
+                resContainer.className = "mt-6 p-5 rounded-lg border-2 bg-red-50 border-red-400 text-red-900 text-center";
+            } else {
+                if (totalBalls >= 4) {
+                    outcome = `🚶 <strong>Tie & Walk!</strong> ${totalBalls} combined balls drawn.`;
+                    resContainer.className = "mt-6 p-5 rounded-lg border-2 bg-blue-50 border-blue-400 text-blue-900 text-center";
+                } else {
+                    outcome = `🔄 <strong>Deadlock Tie!</strong> Not enough balls for a walk. Re-roll At-Bat!`;
+                    resContainer.className = "mt-6 p-5 rounded-lg border-2 bg-yellow-50 border-yellow-400 text-yellow-900 text-center";
+                }
+            }
+            document.getElementById('at-bat-resolution').innerHTML = outcome;
+        }
+
+        function simulateSkillRoll() {
+            let pool = {
+                blue: parseInt(document.getElementById('skill-blue').value) || 0,
+                red: parseInt(document.getElementById('skill-red').value) || 0,
+                black: parseInt(document.getElementById('skill-error').value) || 0
+            };
+
+            let roll = evaluateRoll(pool);
+            
+            // For general skill checks, both H and S count as successes initially
+            let totalSuccesses = roll.counts.H + roll.counts.S;
+            let remainingSuccesses = Math.max(0, totalSuccesses - roll.counts.E);
+            let remainingErrors = Math.max(0, roll.counts.E - totalSuccesses);
+
+            document.getElementById('skill-output').innerHTML = (roll.html || "-") + 
+                `<div class="text-xs font-bold mt-2 text-slate-500">Hits: ${roll.counts.H} | Strikes: ${roll.counts.S} | Errors: ${roll.counts.E}</div>`;
+
+            let outcomeHtml = "";
+            if (remainingSuccesses > 0) {
+                outcomeHtml = `<span class="text-green-700 font-bold">✅ Success! (${remainingSuccesses} net successes)</span>`;
+            } else if (remainingErrors > 0) {
+                outcomeHtml = `<span class="text-red-600 font-bold">🚨 Critical Error! (Only errors remained)</span>`;
+            } else {
+                outcomeHtml = `<span class="text-slate-600 font-bold">❌ Failure! (No successes remained)</span>`;
+            }
+
+            document.getElementById('skill-resolution').innerHTML = outcomeHtml;
+        }
+
+        function simulateOpposedRoll() {
+            let p1Pool = {
+                blue: parseInt(document.getElementById('p1-blue').value) || 0,
+                red: parseInt(document.getElementById('p1-red').value) || 0,
+                black: parseInt(document.getElementById('p1-error').value) || 0
+            };
+            let p2Pool = {
+                blue: parseInt(document.getElementById('p2-blue').value) || 0,
+                red: parseInt(document.getElementById('p2-red').value) || 0,
+                black: parseInt(document.getElementById('p2-error').value) || 0
+            };
+
+            let p1Roll = evaluateRoll(p1Pool);
+            let p2Roll = evaluateRoll(p2Pool);
+
+            // Self-Cancellation
+            p1Roll.counts.H = Math.max(0, p1Roll.counts.H - p1Roll.counts.E);
+            p2Roll.counts.S = Math.max(0, p2Roll.counts.S - p2Roll.counts.E);
+
+            // Mutual Cancellation
+            let netP1 = p1Roll.counts.H;
+            let netP2 = p2Roll.counts.S;
+            let minCancel = Math.min(netP1, netP2);
+            netP1 -= minCancel;
+            netP2 -= minCancel;
+
+            document.getElementById('p1-output').innerHTML = (p1Roll.html || "-") + `<div class="text-xs font-bold mt-2 text-slate-500">Net Successes: ${netP1}</div>`;
+            document.getElementById('p2-output').innerHTML = (p2Roll.html || "-") + `<div class="text-xs font-bold mt-2 text-slate-500">Net Successes: ${netP2}</div>`;
+
+            let outcome = "";
+            if (netP1 > netP2) outcome = "🏆 <strong>Player A Wins!</strong>";
+            else if (netP2 > netP1) outcome = "🏆 <strong>Player B Wins!</strong>";
+            else outcome = "⚖️ <strong>Draw!</strong> (Refer to rulebook)";
+
+            document.getElementById('opposed-resolution').innerHTML = outcome;
+        }
+    </script>
+</body>
+</html>
